@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Engine Pro | Premium Edition</title>
+  <style>
+    :root {
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --glass: rgba(255, 255, 255, 0.96);
+      --bg-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    }
+
+    body { 
+      margin: 0; padding: 0; 
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-gradient);
+      height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    .header-nav {
+      padding: 15px 40px; display: flex; justify-content: space-between; align-items: center;
+      background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    h1 { margin: 0; font-size: 20px; color: white; font-weight: 800; letter-spacing: -0.5px; }
+
+    .main-workspace {
+      flex: 1; margin: 20px 40px 30px; background: var(--glass);
+      border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+      display: flex; flex-direction: column; overflow: hidden;
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    .converter-bar {
+      padding: 20px 35px; background: white; border-bottom: 1px solid #f1f5f9;
+      display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+    }
+
+    .input-group { display: flex; flex-direction: column; gap: 5px; }
+    label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    input, select { 
+      padding: 10px 12px; border-radius: 10px; border: 1px solid #e2e8f0; 
+      font-size: 13px; outline: none; background: #f8fafc;
+    }
+
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #e2e8f0; font-weight: 700; font-size: 11px; cursor: pointer; transition: 0.2s; }
+    .btn-active { background: var(--accent); color: white; border-color: var(--accent); }
+    .btn-primary { background: var(--accent); color: white; border: none; padding: 10px 20px; font-size: 13px; }
+
+    .clock-grid {
+      flex: 1; overflow-y: auto; padding: 30px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
+    }
+
+    .time-card {
+      background: white; border: 1px solid #f1f5f9; padding: 25px;
+      border-radius: 20px; position: relative; transition: 0.3s;
+    }
+    .time-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+
+    .zone-tag { position: absolute; top: 20px; right: 20px; font-size: 10px; font-weight: 900; color: #cbd5e1; }
+    .city-label { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 5px; }
+    .big-time { font-size: 34px; font-weight: 900; color: var(--accent); font-variant-numeric: tabular-nums; }
+    .sub-date { font-size: 12px; color: #94a3b8; margin-bottom: 15px; }
+
+    .manual-toggle {
+      display: flex; align-items: center; gap: 10px; padding: 10px; background: #f1f5f9; border-radius: 12px;
+    }
+
+    .footer { padding: 15px 35px; background: white; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<nav class="header-nav">
+  <h1>TIME ENGINE PRO</h1>
+  <div id="liveTicker" style="color:white; font-weight:600;">--:--:--</div>
+</nav>
+
+<div class="main-workspace">
+  <div class="converter-bar">
+    <div class="input-group">
+      <label>Convert Time</label>
+      <input type="time" id="baseTime" oninput="runConversion()">
+    </div>
+    <div class="input-group">
+      <label>From</label>
+      <select id="baseZone" onchange="runConversion()">
+        <option value="Asia/Kolkata">IST (India)</option>
+        <option value="America/New_York">EST (Eastern)</option>
+        <option value="America/Chicago">CST (Central)</option>
+        <option value="America/Los_Angeles">PST (Pacific)</option>
+      </select>
+    </div>
+
+    <div class="manual-toggle">
+      <label style="margin-right: 5px;">DST Mode:</label>
+      <button id="modeAuto" class="btn btn-active" onclick="setDstMode('auto')">Auto</button>
+      <button id="modeStd" class="btn" onclick="setDstMode('std')">Standard</button>
+      <button id="modeDay" class="btn" onclick="setDstMode('day')">Daylight</button>
+    </div>
+
+    <div style="flex: 1;"></div>
+
+    <div class="input-group">
+      <label>Format</label>
+      <div style="display:flex; gap:4px;">
+        <button id="f12" class="btn btn-active" onclick="toggleFormat(false)">12H</button>
+        <button id="f24" class="btn" onclick="toggleFormat(true)">24H</button>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="resetToLive()">Live Sync</button>
+  </div>
+
+  <div class="clock-grid" id="clockGrid"></div>
+
+  <div class="footer">
+    <div id="statusLabel" style="color: #64748b; font-weight: 600;">STATUS: LIVE AUTO-SYNC</div>
+    <div id="currentDateFooter" style="color: #94a3b8; font-weight: 500;"></div>
+  </div>
+</div>
+
+<script>
+  let is24h = false;
+  let dstMode = 'auto'; 
+  let customDate = null;
+
+  const zones = [
+    { id: 'IST', zone: 'Asia/Kolkata', label: 'India' },
+    { id: 'EST', zone: 'America/New_York', label: 'Eastern Time' },
+    { id: 'CST', zone: 'America/Chicago', label: 'Central Time' },
+    { id: 'PST', zone: 'America/Los_Angeles', label: 'Pacific Time' }
+  ];
+
+  function init() {
+    renderGrid();
+    setInterval(tick, 1000);
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('clockGrid');
+    grid.innerHTML = zones.map(z => `
+      <div class="time-card">
+        <div class="zone-tag">${z.id}</div>
+        <div class="city-label">${z.label}</div>
+        <div class="big-time" id="time-${z.id}">--:--</div>
+        <div class="sub-date" id="date-${z.id}">---</div>
+        <div id="tag-${z.id}" style="font-size:10px; font-weight:800; padding:4px 8px; border-radius:4px; display:inline-block;"></div>
+      </div>
+    `).join('');
+    updateAll();
+  }
+
+  function tick() {
+    const now = new Date();
+    if (!customDate) updateAll();
+    document.getElementById('liveTicker').innerText = now.toLocaleTimeString();
+    document.getElementById('currentDateFooter').innerText = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  function updateAll() {
+    const now = customDate || new Date();
+    
+    zones.forEach(z => {
+      let displayDate = new Date(now.toLocaleString('en-US', { timeZone: z.zone }));
+      
+      if (dstMode !== 'auto' && z.id !== 'IST') {
+        const isCurrentlyDST = isDST(now, z.zone);
+        if (dstMode === 'std' && isCurrentlyDST) {
+            displayDate.setHours(displayDate.getHours() - 1);
+        } else if (dstMode === 'day' && !isCurrentlyDST) {
+            displayDate.setHours(displayDate.getHours() + 1);
+        }
+      }
+
+      const timeStr = displayDate.toLocaleTimeString('en-US', { 
+        hour12: !is24h, 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: customDate ? undefined : '2-digit' 
+      });
+
+      document.getElementById(`time-${z.id}`).innerText = timeStr;
+      document.getElementById(`date-${z.id}`).innerText = displayDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      
+      const tag = document.getElementById(`tag-${z.id}`);
+      const currentlyDaylight = isDST(displayDate, z.zone);
+      
+      if (z.id === 'IST') {
+          tag.innerText = "NO DST"; tag.style.background = "#f1f5f9"; tag.style.color = "#94a3b8";
+      } else {
+          tag.innerText = currentlyDaylight ? "DAYLIGHT SAVINGS" : "STANDARD TIME";
+          tag.style.background = currentlyDaylight ? "#ecfdf5" : "#fff7ed";
+          tag.style.color = currentlyDaylight ? "#10b981" : "#f59e0b";
+      }
+    });
+  }
+
+  function isDST(date, zone) {
+    const str = date.toLocaleString('en-US', { timeZone: zone, timeZoneName: 'long' });
+    return str.includes('Daylight');
+  }
+
+  function runConversion() {
+    const timeVal = document.getElementById('baseTime').value;
+    const zoneVal = document.getElementById('baseZone').value;
+    if (!timeVal) return;
+
+    const [h, m] = timeVal.split(':');
+    const localized = new Date(new Date().toLocaleString('en-US', { timeZone: zoneVal }));
+    localized.setHours(h);
+    localized.setMinutes(m);
+    localized.setSeconds(0);
+
+    customDate = localized; 
+    document.getElementById('statusLabel').innerText = "STATUS: MANUAL CONVERSION";
+    updateAll();
+  }
+
+  function setDstMode(mode) {
+    dstMode = mode;
+    ['modeAuto', 'modeStd', 'modeDay'].forEach(id => document.getElementById(id).classList.remove('btn-active'));
+    document.getElementById('mode' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('btn-active');
+    updateAll();
+  }
+
+  function toggleFormat(val) {
+    is24h = val;
+    document.getElementById('f12').classList.toggle('btn-active', !val);
+    document.getElementById('f24').classList.toggle('btn-active', val);
+    updateAll();
+  }
+
+  function resetToLive() {
+    customDate = null;
+    document.getElementById('baseTime').value = "";
+    document.getElementById('statusLabel').innerText = "STATUS: LIVE AUTO-SYNC";
+    updateAll();
+  }
+
+  init();
+</script>
+</body>
+</html>

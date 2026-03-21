@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Insight Studio | Analytics</title>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    :root {
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --glass: rgba(255, 255, 255, 0.98);
+      --bg-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    }
+
+    body { 
+      margin: 0; padding: 0; 
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-gradient);
+      height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    .header-nav {
+      padding: 15px 40px; display: flex; justify-content: space-between; align-items: center;
+      background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    h1 { margin: 0; font-size: 20px; color: white; font-weight: 800; letter-spacing: -0.5px; }
+
+    .main-workspace {
+      flex: 1; margin: 20px 40px 30px; background: var(--glass);
+      border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+      display: flex; flex-direction: row; overflow: hidden;
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Sidebar Controls */
+    .sidebar {
+      width: 300px; background: #f8fafc; border-right: 1px solid #e2e8f0;
+      padding: 25px; display: flex; flex-direction: column; gap: 18px;
+    }
+
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; }
+
+    select, input { 
+      padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; 
+      font-size: 13px; outline: none; background: white; transition: 0.2s;
+    }
+    select:focus { border-color: var(--accent); }
+
+    .btn { padding: 12px; border-radius: 12px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s; text-align: center; }
+    .btn-primary { background: var(--accent); color: white; }
+
+    /* Dashboard Area */
+    .dashboard-view { flex: 1; display: flex; flex-direction: column; background: white; }
+
+    .stats-strip {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+      padding: 25px 40px; background: #fcfdfe; border-bottom: 1px solid #f1f5f9;
+    }
+    .stat-card {
+      background: white; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .stat-val { font-size: 20px; font-weight: 800; color: var(--accent); }
+    .stat-label { font-size: 11px; color: #94a3b8; font-weight: 600; }
+
+    .chart-box { flex: 1; padding: 30px 40px; position: relative; min-height: 0; }
+    
+    .empty-state {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      text-align: center; color: #cbd5e1;
+    }
+
+    .footer { padding: 15px 40px; background: white; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #64748b; }
+  </style>
+</head>
+<body>
+
+<nav class="header-nav">
+  <h1>ANALYTICS ENGINE</h1>
+  <button class="btn" style="background:rgba(255,255,255,0.2); color:white; padding: 8px 16px;" onclick="document.getElementById('csvInput').click()">Upload CSV</button>
+  <input type="file" id="csvInput" accept=".csv" style="display:none">
+</nav>
+
+<div class="main-workspace">
+  <div class="sidebar">
+    <div class="control-group">
+      <label>Category (X-Axis)</label>
+      <select id="xCol" onchange="processData()"><option>Select X</option></select>
+    </div>
+
+    <div class="control-group">
+      <label>Value (Y-Axis)</label>
+      <select id="yCol" onchange="processData()"><option>Select Y</option></select>
+    </div>
+
+    <div class="control-group">
+      <label>Calculation Logic</label>
+      <select id="calcMethod" onchange="processData()">
+        <option value="sum">Sum of Values</option>
+        <option value="avg">Average of Values</option>
+        <option value="count">Count Frequency</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label>Visualization</label>
+      <select id="chartType" onchange="processData()">
+        <option value="bar">Bar Chart</option>
+        <option value="line">Line Chart</option>
+        <option value="pie">Pie Chart</option>
+        <option value="doughnut">Doughnut</option>
+      </select>
+    </div>
+
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" onclick="downloadImage()">Export Insight</button>
+  </div>
+
+  <div class="dashboard-view">
+    <div class="stats-strip" id="statsStrip">
+      <div class="stat-card"><div class="stat-label">TOTAL RECORDS</div><div class="stat-val" id="totalRows">0</div></div>
+      <div class="stat-card"><div class="stat-label">UNIQUE CATEGORIES</div><div class="stat-val" id="uniqueCats">0</div></div>
+      <div class="stat-card"><div class="stat-label">GLOBAL AVERAGE</div><div class="stat-val" id="globalAvg">0</div></div>
+    </div>
+
+    <div class="chart-box">
+      <canvas id="mainChart"></canvas>
+      <div id="emptyMsg" class="empty-state">
+        <h2 style="margin-bottom:5px;">No Data Active</h2>
+        <p>Please upload a CSV to start interpreting data.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div id="fileStatus">Ready for Analysis</div>
+  <div style="font-weight: 700; color: var(--accent);">CLIENT-SIDE INTELLIGENCE</div>
+</div>
+
+<script>
+  let rawData = [];
+  let columns = [];
+  let myChart = null;
+
+  document.getElementById('csvInput').addEventListener('change', e => {
+    Papa.parse(e.target.files[0], {
+      header: true, dynamicTyping: true, skipEmptyLines: true,
+      complete: (res) => {
+        rawData = res.data;
+        columns = res.meta.fields;
+        const xSel = document.getElementById('xCol');
+        const ySel = document.getElementById('yCol');
+        xSel.innerHTML = columns.map(c => `<option value="${c}">${c}</option>`).join('');
+        ySel.innerHTML = columns.map(c => `<option value="${c}">${c}</option>`).join('');
+        if(columns.length > 1) ySel.selectedIndex = 1;
+        document.getElementById('emptyMsg').style.display = 'none';
+        processData();
+      }
+    });
+  });
+
+  function processData() {
+    if (!rawData.length) return;
+
+    const xKey = document.getElementById('xCol').value;
+    const yKey = document.getElementById('yCol').value;
+    const method = document.getElementById('calcMethod').value;
+    
+    // THE ENGINE: Group data by X category
+    const grouped = {};
+    rawData.forEach(row => {
+      const groupValue = row[xKey] || 'N/A';
+      const numericValue = parseFloat(row[yKey]) || 0;
+
+      if (!grouped[groupValue]) grouped[groupValue] = { sum: 0, count: 0 };
+      grouped[groupValue].sum += numericValue;
+      grouped[groupValue].count += 1;
+    });
+
+    // Generate Final Labels and Values based on Math Logic
+    const labels = Object.keys(grouped);
+    let values = [];
+
+    if (method === 'sum') {
+      values = labels.map(l => grouped[l].sum);
+    } else if (method === 'avg') {
+      values = labels.map(l => (grouped[l].sum / grouped[l].count).toFixed(2));
+    } else if (method === 'count') {
+      values = labels.map(l => grouped[l].count);
+    }
+
+    // Calculate Percentages for Stats
+    const totalSum = values.reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+    const globalAvg = (totalSum / labels.length).toFixed(2);
+
+    updateStats(rawData.length, labels.length, globalAvg);
+    renderChart(labels, values, yKey);
+  }
+
+  function updateStats(rows, cats, avg) {
+    document.getElementById('totalRows').innerText = rows;
+    document.getElementById('uniqueCats').innerText = cats;
+    document.getElementById('globalAvg').innerText = isNaN(avg) ? "0" : avg;
+    document.getElementById('fileStatus').innerText = `Dataset: ${rows} rows aggregated into ${cats} categories.`;
+  }
+
+  function renderChart(labels, data, label) {
+    const ctx = document.getElementById('mainChart').getContext('2d');
+    const type = document.getElementById('chartType').value;
+
+    if (myChart) myChart.destroy();
+
+    myChart = new Chart(ctx, {
+      type: type,
+      data: {
+        labels: labels,
+        datasets: [{
+          label: `${document.getElementById('calcMethod').selectedOptions[0].text} (${label})`,
+          data: data,
+          backgroundColor: ['#6366f1', '#a855f7', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'],
+          borderRadius: 8,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'top' } },
+        scales: (type !== 'pie' && type !== 'doughnut') ? { y: { beginAtZero: true } } : {}
+      }
+    });
+  }
+
+  function downloadImage() {
+    const link = document.createElement('a');
+    link.download = 'analytics-report.png';
+    link.href = document.getElementById('mainChart').toDataURL();
+    link.click();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio Pro | Ultimate SaaS Edition</title>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  
+  <style>
+    :root {
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --danger: #ef4444;
+      --glass: rgba(255, 255, 255, 0.98);
+      --bg-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    }
+
+    body { 
+      margin: 0; padding: 0; 
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-gradient);
+      height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    .resizing { cursor: col-resize !important; user-select: none !important; }
+
+    .header-nav {
+      padding: 15px 40px; display: flex; justify-content: space-between; align-items: center;
+      background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2); z-index: 100;
+    }
+    h1 { margin: 0; font-size: 22px; color: white; letter-spacing: -0.5px; font-weight: 800; }
+
+    .main-workspace {
+      flex: 1; margin: 15px 40px 25px; background: var(--glass);
+      border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+      display: flex; flex-direction: column; overflow: hidden;
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    .formula-bar {
+      display: flex; align-items: center; padding: 10px 25px;
+      background: #f8fafc; border-bottom: 1px solid #e2e8f0; gap: 15px;
+    }
+    .fx-icon { font-style: italic; font-weight: 900; color: var(--accent); font-size: 16px; font-family: serif; }
+    #cellDisplay { flex: 1; padding: 8px 15px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-size: 13px; color: #334155; min-height: 20px; }
+
+    .toolbar {
+      padding: 12px 25px; display: flex; gap: 10px; align-items: center;
+      background: white; border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    #search { flex: 1; padding: 10px 15px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 13px; }
+
+    .btn { padding: 8px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-ghost { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+    .btn-ghost:hover { background: #f1f5f9; color: var(--accent); }
+    .btn-danger { background: #fee2e2; color: var(--danger); }
+    .btn-danger:hover { background: #fecaca; }
+
+    .table-container { flex: 1; overflow: auto; background: white; }
+    table { border-collapse: separate; border-spacing: 0; table-layout: fixed; width: max-content; min-width: 100%; }
+    
+    th { 
+      background: #f8fafc; position: sticky; top: 0; z-index: 20; 
+      padding: 12px 15px; text-align: left; font-size: 11px;
+      text-transform: uppercase; color: #64748b; border-bottom: 2px solid #f1f5f9;
+      border-right: 1px solid #f1f5f9; position: relative;
+    }
+
+    .resizer { position: absolute; right: 0; top: 0; width: 4px; height: 100%; cursor: col-resize; z-index: 25; }
+    .resizer:hover { background: var(--accent); }
+
+    td { 
+      padding: 10px 15px; border-bottom: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9;
+      font-size: 13px; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      outline: none;
+    }
+    tr:hover td { background: #f8fafc; }
+    td:focus { background: white; box-shadow: inset 0 0 0 2px var(--accent); z-index: 10; }
+
+    .footer {
+      padding: 10px 25px; background: white; border-top: 1px solid #f1f5f9;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .footer-section { display: flex; align-items: center; gap: 15px; }
+
+    .input-mini {
+      padding: 6px 10px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 12px; outline: none; width: 60px;
+    }
+    .select-mini {
+      padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 12px; outline: none; background: #f8fafc;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="header-nav">
+  <h1>STUDIO PRO</h1>
+  <button class="btn" style="background:rgba(255,255,255,0.2); color:white;" onclick="document.getElementById('fileInput').click()">Upload CSV</button>
+  <input type="file" id="fileInput" accept=".csv" style="display:none">
+</nav>
+
+<div class="main-workspace">
+  <div class="formula-bar">
+    <div class="fx-icon">fx</div>
+    <div id="cellDisplay">Select a cell to view content...</div>
+  </div>
+
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="Search data..." oninput="currentPage=1; renderTable()">
+    <button class="btn btn-ghost" onclick="addRow()">+ Row</button>
+    <button class="btn btn-ghost" onclick="addColumn()">+ Column</button>
+    <button class="btn btn-ghost" onclick="bulkReplace()">Replace</button>
+    <button class="btn btn-danger" onclick="clearData()">Clear All</button>
+    
+    <div style="flex: 1;"></div>
+    
+    <select id="downloadType" class="select-mini" style="height: 35px;">
+      <option value="csv">CSV</option>
+      <option value="xlsx">Excel</option>
+      <option value="pdf">PDF</option>
+    </select>
+    <button class="btn btn-primary" onclick="triggerDownload()">Export</button>
+  </div>
+
+  <div class="table-container">
+    <table id="mainTable"></table>
+  </div>
+
+  <div class="footer">
+    <div class="footer-section">
+      <span style="font-size: 12px; color: #64748b;">Rows per page:</span>
+      <select id="rowsPerPage" class="select-mini" onchange="changeRowsPerPage()">
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100" selected>100</option>
+        <option value="500">500</option>
+      </select>
+      <div id="statusText" style="font-size: 12px; color: #94a3b8; margin-left: 10px;">Ready</div>
+    </div>
+
+    <div class="footer-section">
+      <button class="btn btn-ghost" style="padding: 4px 10px;" onclick="changePage(-1)">←</button>
+      <span id="pageInfo" style="font-size: 12px; font-weight: 700;">1 / 1</span>
+      <button class="btn btn-ghost" style="padding: 4px 10px;" onclick="changePage(1)">→</button>
+      
+      <div style="width: 1px; height: 20px; background: #e2e8f0; margin: 0 5px;"></div>
+      
+      <span style="font-size: 12px; color: #64748b;">Jump to:</span>
+      <input type="number" id="jumpPage" class="input-mini" placeholder="Page #">
+      <button class="btn btn-ghost" style="padding: 4px 10px;" onclick="jumpToPage()">Go</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let rawData = [];
+let columns = [];
+let currentPage = 1;
+let rowsPerPage = 100;
+let colWidths = {};
+
+// RESIZE ENGINE
+let currentResizer = null;
+let startX, startWidth, currentColumn;
+
+function initResize(e, col) {
+    currentResizer = e.target;
+    currentColumn = col;
+    startX = e.pageX;
+    startWidth = currentResizer.parentElement.offsetWidth;
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', stopResize);
+    document.body.classList.add('resizing');
+}
+
+function handleMouseMove(e) {
+    if (!currentResizer) return;
+    const newWidth = Math.max(60, startWidth + (e.pageX - startX));
+    colWidths[currentColumn] = newWidth;
+    currentResizer.parentElement.style.width = newWidth + 'px';
+}
+
+function stopResize() {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', stopResize);
+    document.body.classList.remove('resizing');
+    currentResizer = null;
+    renderTable(); 
+}
+
+// FILE HANDLING
+document.getElementById('fileInput').addEventListener('change', e => {
+    Papa.parse(e.target.files[0], {
+        header: true, skipEmptyLines: true,
+        complete: (r) => {
+            rawData = r.data;
+            columns = r.meta.fields || [];
+            columns.forEach(c => colWidths[c] = 180);
+            currentPage = 1;
+            renderTable();
+        }
+    });
+});
+
+function renderTable() {
+    const table = document.getElementById('mainTable');
+    const query = document.getElementById('search').value.toLowerCase();
+    const filtered = query ? rawData.filter(r => Object.values(r).some(v => String(v).toLowerCase().includes(query))) : rawData;
+    
+    const totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
+    const start = (currentPage - 1) * rowsPerPage;
+    const pageData = filtered.slice(start, start + rowsPerPage);
+
+    if (!columns.length) {
+        table.innerHTML = '<tr><td style="text-align:center; padding:100px; color:#94a3b8;">No data loaded</td></tr>';
+        return;
+    }
+
+    let html = '<thead><tr>';
+    columns.forEach(col => {
+        html += `<th style="width: ${colWidths[col]}px">
+                    <span contenteditable="true" onblur="renameCol('${col}', this.innerText)">${col}</span>
+                    <div class="resizer" onmousedown="initResize(event, '${col}')"></div>
+                 </th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    pageData.forEach((row, i) => {
+        const realIdx = start + i;
+        html += `<tr>`;
+        columns.forEach(col => {
+            html += `<td contenteditable="true" 
+                        onfocus="document.getElementById('cellDisplay').innerText=this.innerText"
+                        oninput="document.getElementById('cellDisplay').innerText=this.innerText"
+                        onblur="updateData(${realIdx}, '${col}', this.innerText)">${row[col] || ''}</td>`;
+        });
+        html += `</tr>`;
+    });
+    table.innerHTML = html;
+    document.getElementById('pageInfo').innerText = `${currentPage} / ${totalPages}`;
+    document.getElementById('statusText').innerText = `Total Rows: ${filtered.length}`;
+}
+
+// CORE TOOLS
+function updateData(idx, col, val) { rawData[idx][col] = val; }
+function addRow() { rawData.unshift({}); renderTable(); }
+function addColumn() { const n = prompt("Column Name:"); if(n) { columns.push(n); colWidths[n]=180; rawData.forEach(r=>r[n]=''); renderTable(); } }
+function clearData() { if(confirm("Clear all data?")) { rawData=[]; columns=[]; renderTable(); document.getElementById('cellDisplay').innerText="Select a cell..."; } }
+
+// PAGINATION LOGIC
+function changeRowsPerPage() {
+    rowsPerPage = parseInt(document.getElementById('rowsPerPage').value);
+    currentPage = 1;
+    renderTable();
+}
+function changePage(dir) {
+    const totalPages = Math.ceil(rawData.length / rowsPerPage);
+    currentPage += dir;
+    if(currentPage < 1) currentPage = 1;
+    if(currentPage > totalPages) currentPage = totalPages;
+    renderTable();
+}
+function jumpToPage() {
+    const val = parseInt(document.getElementById('jumpPage').value);
+    const totalPages = Math.ceil(rawData.length / rowsPerPage);
+    if(val >= 1 && val <= totalPages) {
+        currentPage = val;
+        renderTable();
+    }
+}
+
+function bulkReplace() {
+    const find = prompt("Value to find:"); if(find === null) return;
+    const replace = prompt(`Replace "${find}" with:`); if(replace === null) return;
+    rawData.forEach(row => columns.forEach(col => { if(String(row[col]) === find) row[col] = replace; }));
+    renderTable();
+}
+
+function triggerDownload() {
+    const type = document.getElementById('downloadType').value;
+    if (!rawData.length) return;
+    if(type === 'csv') {
+        const csv = Papa.unparse(rawData);
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob(["\ufeff" + csv]));
+        a.download = 'export.csv'; a.click();
+    } else if(type === 'xlsx') {
+        const ws = XLSX.utils.json_to_sheet(rawData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Data');
+        XLSX.writeFile(wb, 'export.xlsx');
+    } else if(type === 'pdf') {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'pt', 'a4');
+        doc.autoTable({ head: [columns], body: rawData.map(r => columns.map(c => String(r[c]||''))) });
+        doc.save('report.pdf');
+    }
+}
+</script>
+</body>
+</html>

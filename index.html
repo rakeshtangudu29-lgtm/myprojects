@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rakesh Labs | Dev Suite</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.4);
+      --text-main: #f8fafc;
+      --text-dim: #94a3b8;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin: 0;
+      background: linear-gradient(to right, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -1px;
+    }
+
+    p.subtitle {
+      color: var(--text-dim);
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+
+    /* Grid Layout */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      max-width: 1100px;
+      width: 100%;
+    }
+
+    /* Card Styling */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 30px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px var(--accent-glow);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
+      transform: translateX(-100%);
+      transition: 0.6s;
+    }
+
+    .card:hover::before { transform: translateX(100%); }
+
+    .icon {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .card p {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin: 12px 0 20px 0;
+      flex-grow: 1;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background: rgba(99, 102, 241, 0.1);
+      color: #818cf8;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      align-self: flex-start;
+    }
+
+    footer {
+      margin-top: 80px;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Rakesh Labs</h1>
+    <p class="subtitle">Cloud Technology & UI/UX Research Division</p>
+  </header>
+
+  <main class="project-grid">
+    <a href="/CSV-editor/" class="card">
+      <div class="icon">📊</div>
+      <div class="badge">Tool</div>
+      <h2>CSV Editor</h2>
+      <p>A high-performance data handling suite with real-time editing and premium animations.</p>
+    </a>
+
+    <a href="/TimeZone/" class="card">
+      <div class="icon">🚀</div>
+      <div class="badge">API</div>
+      <h2>World Clock</h2>
+      <p>A Postman-style workspace for debugging headers, params, and authorization tokens.</p>
+    </a>
+
+    <a href="/Dashboard/" class="card">
+      <div class="icon">💎</div>
+      <div class="badge">Core</div>
+      <h2>CSV Analyzer</h2>
+      <p>Centralized monitoring system for cloud metrics and user management.</p>
+    </a>
+
+    <a href="/Data-Conversion/" class="card">
+      <div class="icon">🔄</div>
+      <div class="badge">Logic</div>
+      <h2>Data Conversion</h2>
+      <p>Seamlessly transform XML, JSON, and CSV formats with 100% data integrity.</p>
+    </a>
+
+    <a href="/Weather-App/" class="card">
+      <div class="icon">🌤️</div>
+      <div class="badge">Real-Time</div>
+      <h2>Weather Hub</h2>
+      <p>Global weather tracking with dynamic time-syncing and animated condition icons.</p>
+    </a>
+  </main>
+
+  <footer>
+    &copy; 2026 Rakesh Labs. All systems operational.
+  </footer>
+
+</body>
+</html>
