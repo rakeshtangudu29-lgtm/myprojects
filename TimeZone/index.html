@@ -7,7 +7,6 @@
   <style>
     :root {
       --accent: #6366f1;
-      --accent-hover: #4f46e5;
       --glass: rgba(255, 255, 255, 0.96);
       --bg-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
     }
@@ -24,54 +23,71 @@
       background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
-    h1 { margin: 0; font-size: 20px; color: white; font-weight: 800; letter-spacing: -0.5px; }
+    h1 { margin: 0; font-size: 20px; color: white; font-weight: 800; }
 
     .main-workspace {
       flex: 1; margin: 20px 40px 30px; background: var(--glass);
-      border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+      border-radius: 24px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
       display: flex; flex-direction: column; overflow: hidden;
-      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
-    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
     .converter-bar {
       padding: 20px 35px; background: white; border-bottom: 1px solid #f1f5f9;
       display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+      position: relative; z-index: 50; /* Base layer for controls */
     }
 
     .input-group { display: flex; flex-direction: column; gap: 5px; }
-    label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+    label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
 
     input, select { 
       padding: 10px 12px; border-radius: 10px; border: 1px solid #e2e8f0; 
       font-size: 13px; outline: none; background: #f8fafc;
     }
 
-    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #e2e8f0; font-weight: 700; font-size: 11px; cursor: pointer; transition: 0.2s; }
+    /* --- DROPDOWN FIX --- */
+    .search-box { position: relative; width: 220px; }
+    .search-results {
+        position: absolute; 
+        top: calc(100% + 5px); left: 0; right: 0;
+        background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+        max-height: 250px; overflow-y: auto; 
+        z-index: 1000; /* Ensure it floats above the grid */
+        display: none;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+    .result-item { 
+        padding: 12px 15px; 
+        cursor: pointer !important; 
+        font-size: 12px; 
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+        transition: background 0.2s;
+    }
+    .result-item:hover { background: #f1f5ff; color: var(--accent); font-weight: 600; }
+
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #e2e8f0; font-weight: 700; font-size: 11px; cursor: pointer; }
     .btn-active { background: var(--accent); color: white; border-color: var(--accent); }
     .btn-primary { background: var(--accent); color: white; border: none; padding: 10px 20px; font-size: 13px; }
 
     .clock-grid {
       flex: 1; overflow-y: auto; padding: 30px;
       display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
+      z-index: 10; /* Lower than dropdown */
     }
 
     .time-card {
       background: white; border: 1px solid #f1f5f9; padding: 25px;
       border-radius: 20px; position: relative; transition: 0.3s;
     }
-    .time-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+    .remove-zone { position: absolute; top: 10px; right: 10px; border: none; background: #fee2e2; color: #ef4444; padding: 4px 8px; border-radius: 6px; font-size: 9px; cursor: pointer; }
 
     .zone-tag { position: absolute; top: 20px; right: 20px; font-size: 10px; font-weight: 900; color: #cbd5e1; }
     .city-label { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 5px; }
     .big-time { font-size: 34px; font-weight: 900; color: var(--accent); font-variant-numeric: tabular-nums; }
     .sub-date { font-size: 12px; color: #94a3b8; margin-bottom: 15px; }
 
-    .manual-toggle {
-      display: flex; align-items: center; gap: 10px; padding: 10px; background: #f1f5f9; border-radius: 12px;
-    }
-
+    .manual-toggle { display: flex; align-items: center; gap: 10px; padding: 10px; background: #f1f5f9; border-radius: 12px; }
     .footer { padding: 15px 35px; background: white; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
   </style>
 </head>
@@ -96,6 +112,12 @@
         <option value="America/Chicago">CST (Central)</option>
         <option value="America/Los_Angeles">PST (Pacific)</option>
       </select>
+    </div>
+
+    <div class="input-group search-box">
+        <label>Search Global Zone</label>
+        <input type="text" id="zoneInput" placeholder="Ex: London, Dubai..." onfocus="searchZones()" oninput="searchZones()">
+        <div id="results" class="search-results"></div>
     </div>
 
     <div class="manual-toggle">
@@ -130,27 +152,77 @@
   let dstMode = 'auto'; 
   let customDate = null;
 
-  const zones = [
-    { id: 'IST', zone: 'Asia/Kolkata', label: 'India' },
-    { id: 'EST', zone: 'America/New_York', label: 'Eastern Time' },
-    { id: 'CST', zone: 'America/Chicago', label: 'Central Time' },
-    { id: 'PST', zone: 'America/Los_Angeles', label: 'Pacific Time' }
+  const coreZones = [
+    { id: 'IST', zone: 'Asia/Kolkata', label: 'India', core: true },
+    { id: 'EST', zone: 'America/New_York', label: 'Eastern Time', core: true },
+    { id: 'CST', zone: 'America/Chicago', label: 'Central Time', core: true },
+    { id: 'PST', zone: 'America/Los_Angeles', label: 'Pacific Time', core: true }
   ];
+
+  let displayedZones = [...coreZones];
+  const allAvailableZones = Intl.supportedValuesOf('timeZone');
 
   function init() {
     renderGrid();
     setInterval(tick, 1000);
+
+    // Global click listener to close dropdown
+    document.addEventListener('click', (e) => {
+        const res = document.getElementById('results');
+        const input = document.getElementById('zoneInput');
+        if (e.target !== input && !res.contains(e.target)) {
+            res.style.display = 'none';
+        }
+    });
+  }
+
+  function searchZones() {
+      const q = document.getElementById('zoneInput').value.toLowerCase();
+      const res = document.getElementById('results');
+      if (q.length < 1) { res.style.display = 'none'; return; }
+      
+      const matches = allAvailableZones.filter(z => z.toLowerCase().includes(q)).slice(0, 15);
+      
+      if (matches.length > 0) {
+          res.innerHTML = matches.map(z => `<div class="result-item" onclick="addZone('${z}')">${z.replace(/_/g, ' ')}</div>`).join('');
+          res.style.display = 'block';
+      } else {
+          res.style.display = 'none';
+      }
+  }
+
+  function addZone(zone) {
+      if (displayedZones.find(z => z.zone === zone)) {
+          document.getElementById('results').style.display = 'none';
+          return;
+      }
+      const label = zone.split('/').pop().replace(/_/g, ' ');
+      displayedZones.push({ 
+          id: label.substring(0,3).toUpperCase(), 
+          zone: zone, 
+          label: label, 
+          core: false 
+      });
+      document.getElementById('zoneInput').value = '';
+      document.getElementById('results').style.display = 'none';
+      renderGrid();
+  }
+
+  function removeZone(index) {
+      displayedZones.splice(index, 1);
+      renderGrid();
   }
 
   function renderGrid() {
     const grid = document.getElementById('clockGrid');
-    grid.innerHTML = zones.map(z => `
+    grid.innerHTML = displayedZones.map((z, i) => `
       <div class="time-card">
         <div class="zone-tag">${z.id}</div>
         <div class="city-label">${z.label}</div>
-        <div class="big-time" id="time-${z.id}">--:--</div>
-        <div class="sub-date" id="date-${z.id}">---</div>
-        <div id="tag-${z.id}" style="font-size:10px; font-weight:800; padding:4px 8px; border-radius:4px; display:inline-block;"></div>
+        <div class="big-time" id="time-${i}">--:--</div>
+        <div class="sub-date" id="date-${i}">---</div>
+        <div id="tag-${i}" style="font-size:10px; font-weight:800; padding:4px 8px; border-radius:4px; display:inline-block;"></div>
+        ${!z.core ? `<button class="remove-zone" onclick="removeZone(${i})">REMOVE</button>` : ''}
       </div>
     `).join('');
     updateAll();
@@ -165,36 +237,32 @@
 
   function updateAll() {
     const now = customDate || new Date();
-    
-    zones.forEach(z => {
+    displayedZones.forEach((z, i) => {
+      const tEl = document.getElementById(`time-${i}`);
+      const dEl = document.getElementById(`date-${i}`);
+      const tag = document.getElementById(`tag-${i}`);
+      if (!tEl) return;
+
       let displayDate = new Date(now.toLocaleString('en-US', { timeZone: z.zone }));
       
       if (dstMode !== 'auto' && z.id !== 'IST') {
         const isCurrentlyDST = isDST(now, z.zone);
-        if (dstMode === 'std' && isCurrentlyDST) {
-            displayDate.setHours(displayDate.getHours() - 1);
-        } else if (dstMode === 'day' && !isCurrentlyDST) {
-            displayDate.setHours(displayDate.getHours() + 1);
-        }
+        if (dstMode === 'std' && isCurrentlyDST) displayDate.setHours(displayDate.getHours() - 1);
+        else if (dstMode === 'day' && !isCurrentlyDST) displayDate.setHours(displayDate.getHours() + 1);
       }
 
       const timeStr = displayDate.toLocaleTimeString('en-US', { 
-        hour12: !is24h, 
-        hour: '2-digit', 
-        minute: '2-digit',
-        second: customDate ? undefined : '2-digit' 
+        hour12: !is24h, hour: '2-digit', minute: '2-digit', second: customDate ? undefined : '2-digit' 
       });
 
-      document.getElementById(`time-${z.id}`).innerText = timeStr;
-      document.getElementById(`date-${z.id}`).innerText = displayDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      tEl.innerText = timeStr;
+      dEl.innerText = displayDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
       
-      const tag = document.getElementById(`tag-${z.id}`);
       const currentlyDaylight = isDST(displayDate, z.zone);
-      
       if (z.id === 'IST') {
           tag.innerText = "NO DST"; tag.style.background = "#f1f5f9"; tag.style.color = "#94a3b8";
       } else {
-          tag.innerText = currentlyDaylight ? "DAYLIGHT SAVINGS" : "STANDARD TIME";
+          tag.innerText = currentlyDaylight ? "DAYLIGHT" : "STANDARD";
           tag.style.background = currentlyDaylight ? "#ecfdf5" : "#fff7ed";
           tag.style.color = currentlyDaylight ? "#10b981" : "#f59e0b";
       }
@@ -202,21 +270,16 @@
   }
 
   function isDST(date, zone) {
-    const str = date.toLocaleString('en-US', { timeZone: zone, timeZoneName: 'long' });
-    return str.includes('Daylight');
+    return date.toLocaleString('en-US', { timeZone: zone, timeZoneName: 'long' }).includes('Daylight');
   }
 
   function runConversion() {
     const timeVal = document.getElementById('baseTime').value;
     const zoneVal = document.getElementById('baseZone').value;
     if (!timeVal) return;
-
     const [h, m] = timeVal.split(':');
     const localized = new Date(new Date().toLocaleString('en-US', { timeZone: zoneVal }));
-    localized.setHours(h);
-    localized.setMinutes(m);
-    localized.setSeconds(0);
-
+    localized.setHours(h); localized.setMinutes(m); localized.setSeconds(0);
     customDate = localized; 
     document.getElementById('statusLabel').innerText = "STATUS: MANUAL CONVERSION";
     updateAll();
