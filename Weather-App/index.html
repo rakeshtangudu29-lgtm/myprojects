@@ -35,7 +35,6 @@
             background: var(--accent); color: #000; font-weight: 700; cursor: pointer;
         }
 
-        /* Weather Animation Area */
         #weather-icon-container {
             height: 80px; display: flex; justify-content: center; align-items: center;
             font-size: 50px; margin-bottom: 10px;
@@ -65,11 +64,11 @@
 
     <div id="weather-icon-container">🌍</div>
 
-    <div id="dateText" style="opacity: 0.5; font-size: 0.8rem;">Awaiting Sync</div>
+    <div id="dateText" style="opacity: 0.5; font-size: 0.8rem;">Syncing Location...</div>
     <div class="time" id="timeText">00:00</div>
     <div class="temp" id="tempText">--°</div>
     
-    <div class="city" id="cityText">Location</div>
+    <div class="city" id="cityText">Detecting...</div>
     <div id="descText" style="font-style: italic; opacity: 0.7; font-size: 0.9rem;">Cloud Tech Edition</div>
 
     <div class="stats">
@@ -79,13 +78,15 @@
 </div>
 
 <script>
-    // Remember to replace this with your actual key from WeatherAPI.com
     const KEY = "2b49377f8e1c4afba6761437262103"; 
     let clockInterval;
 
-    async function fetchWeather() {
+    // Modified to accept an optional manual query string
+    async function fetchWeather(manualQuery) {
         const input = document.getElementById('cityInput');
-        const city = input.value.trim();
+        // Use the manualQuery (like lat,lon) if provided, otherwise grab from input
+        const city = manualQuery || input.value.trim();
+        
         if (!city) return;
 
         try {
@@ -93,17 +94,14 @@
             const data = await res.json();
             if (data.error) throw new Error(data.error.message);
 
-            // Update Text
             document.getElementById('cityText').innerText = `${data.location.name}, ${data.location.country}`;
             document.getElementById('tempText').innerText = `${Math.round(data.current.temp_c)}°C`;
             document.getElementById('descText').innerText = data.current.condition.text;
             document.getElementById('humText').innerText = `${data.current.humidity}%`;
             document.getElementById('windText').innerText = `${data.current.wind_kph} km/h`;
 
-            // Update Icon Animation
             updateIcon(data.current.condition.text.toLowerCase());
 
-            // Clock Logic
             if (clockInterval) clearInterval(clockInterval);
             const offset = new Date(data.location.localtime) - new Date();
             clockInterval = setInterval(() => {
@@ -112,7 +110,10 @@
                 document.getElementById('timeText').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
             }, 1000);
 
-        } catch (err) { alert(err.message); }
+        } catch (err) { 
+            console.error(err);
+            document.getElementById('cityText').innerText = "Location Error";
+        }
     }
 
     function updateIcon(condition) {
@@ -129,6 +130,27 @@
             container.innerHTML = `🌍`;
         }
     }
+
+    // --- NEW: Auto-Location Logic ---
+    function initAutoLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const query = `${position.coords.latitude},${position.coords.longitude}`;
+                    fetchWeather(query);
+                },
+                (error) => {
+                    // Default to a fallback city if user denies location
+                    fetchWeather("Hyderabad");
+                }
+            );
+        } else {
+            fetchWeather("Hyderabad");
+        }
+    }
+
+    // Run on landing
+    initAutoLocation();
 </script>
 
 </body>
