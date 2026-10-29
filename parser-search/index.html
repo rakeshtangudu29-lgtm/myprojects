@@ -5,126 +5,240 @@
 <title>Parquet Search</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
-:root{--bg:#f7f7f5;--card:#fff;--tx:#1d1d1b;--mut:#6b6b66;--bd:#e2e2dc;--ac:#d9541e;--hi:#fff1c2;--lk:#e8f1ff;--ln:#c6efd3;--ok:#1a7f37;--warn:#9a6700;--bad:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161615;--card:#212120;--tx:#eeeeea;--mut:#a0a09a;--bd:#38382f;--ac:#ff7a45;--hi:#5a4a10;--lk:#1b2a44;--ln:#1f5a35;--ok:#2a8a45;--warn:#a8730a;--bad:#c9483a;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#161615;--card:#212120;--tx:#eeeeea;--mut:#a0a09a;--bd:#38382f;--ac:#ff7a45;--hi:#5a4a10;--lk:#1b2a44;--ln:#1f5a35;--ok:#2a8a45;--warn:#a8730a;--bad:#c9483a;color-scheme:dark}
+:root{
+  --bg1:#f5f4f2;--bg2:#ebeae6;--glow1:rgba(120,113,108,.12);--glow2:rgba(122,46,59,.07);
+  --card:rgba(255,255,255,.88);--card2:#ffffff;--inp:#ffffff;
+  --tx:#1f1d1b;--mut:#6b665f;--bd:rgba(31,29,27,.14);
+  --ac:#7a2e3b;--ac2:#5c1f2c;--ring:rgba(122,46,59,.20);
+  --hl:#d19a00;--hi:#fdeeb0;--lk:#ebe9e4;--ln:#cfe8d5;--th:#efede9;--hov:rgba(31,29,27,.05);
+  --shadow:0 8px 28px rgba(31,29,27,.08);
+  --ok:#1a7f37;--warn:#9a6700;--bad:#b42318;
+  --btn:linear-gradient(135deg,#8a3345,#5c1f2c);--btnsh:rgba(92,31,44,.30);
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg1:#121213;--bg2:#1a1a1c;--glow1:rgba(255,255,255,.04);--glow2:rgba(150,60,80,.12);
+  --card:rgba(32,32,35,.80);--card2:#1d1d20;--inp:rgba(14,14,16,.72);
+  --tx:#ecebe8;--mut:#a09b94;--bd:rgba(255,255,255,.10);
+  --ac:#d79aa8;--ac2:#b86b7d;--ring:rgba(215,154,168,.26);
+  --hl:#e0b020;--hi:#5e4b0a;--lk:rgba(255,255,255,.07);--ln:#24573a;--th:#28282c;--hov:rgba(255,255,255,.06);
+  --shadow:0 12px 36px rgba(0,0,0,.5);
+  --ok:#2a8a45;--warn:#a8730a;--bad:#c9483a;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg1:#121213;--bg2:#1a1a1c;--glow1:rgba(255,255,255,.04);--glow2:rgba(150,60,80,.12);
+  --card:rgba(32,32,35,.80);--card2:#1d1d20;--inp:rgba(14,14,16,.72);
+  --tx:#ecebe8;--mut:#a09b94;--bd:rgba(255,255,255,.10);
+  --ac:#d79aa8;--ac2:#b86b7d;--ring:rgba(215,154,168,.26);
+  --hl:#e0b020;--hi:#5e4b0a;--lk:rgba(255,255,255,.07);--ln:#24573a;--th:#28282c;--hov:rgba(255,255,255,.06);
+  --shadow:0 12px 36px rgba(0,0,0,.5);
+  --ok:#2a8a45;--warn:#a8730a;--bad:#c9483a;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;padding:16px;max-width:1100px;margin-inline:auto}
-h1{font-size:20px;margin:4px 0 12px}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px}
-#drop{border:2px dashed var(--bd);border-radius:12px;padding:22px;text-align:center;color:var(--mut);cursor:pointer}
-#drop.over{border-color:var(--ac);color:var(--ac)}
-.files{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.chip{background:var(--bg);border:1px solid var(--bd);border-radius:20px;padding:3px 6px 3px 10px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;max-width:100%}
-.chip b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px}
-.chip .x{border:0;background:transparent;color:var(--mut);padding:0 6px;font-size:16px;line-height:1;cursor:pointer;border-radius:10px}
-.chip .x:hover{color:var(--bad)}
+[hidden]{display:none!important}
+html{background:var(--bg1)}
+body{margin:0;min-height:100vh;color:var(--tx);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px;
+  background:radial-gradient(900px 520px at 8% -8%,var(--glow1),transparent 60%),radial-gradient(800px 520px at 100% 0,var(--glow2),transparent 60%),linear-gradient(160deg,var(--bg1),var(--bg2));background-attachment:fixed}
+.glass,.card{background:var(--card);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--bd);border-radius:16px;box-shadow:var(--shadow)}
+.card{padding:16px;margin-bottom:14px}
+
+/* header */
+.top{max-width:1500px;margin:0 auto 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px}
+.brand{display:flex;align-items:center;gap:14px;min-width:0}
+.logo{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;color:var(--ac);background:linear-gradient(145deg,rgba(122,46,59,.14),rgba(127,127,127,.10));border:1px solid var(--bd);flex:none}
+.top h1{font-size:22px;line-height:1.15;margin:0;letter-spacing:.005em;font-weight:650}
+.top p{margin:2px 0 0;font-size:13px;color:var(--mut)}
+.icon-btn{width:42px;height:42px;padding:0;border-radius:50%;display:grid;place-items:center;background:var(--inp);color:var(--hl);border:1px solid var(--bd);box-shadow:none;flex:none}
+.icon-btn:hover{box-shadow:0 0 0 4px var(--ring);transform:none}
+
+/* layout */
+.layout{max-width:1500px;margin:0 auto;display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px;align-items:start}
+.side,.main{min-width:0}
+@media (max-width:940px){.layout{grid-template-columns:1fr}.top p{display:none}}
+.ct{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--mut)}
+.ct svg{color:var(--ac);flex:none}
+
+/* drop zone */
+#drop{border:1.5px dashed var(--bd);border-radius:14px;padding:24px 14px;text-align:center;color:var(--mut);cursor:pointer;background:linear-gradient(180deg,transparent,rgba(127,127,127,.07));transition:border-color .15s,box-shadow .15s,background .15s}
+#drop:hover,#drop.over{border-color:var(--ac);color:var(--ac);box-shadow:0 0 0 4px var(--ring)}
+#drop svg{color:var(--ac)}
+#drop b{display:block;margin-top:8px;color:var(--tx);font-size:15px}
+#drop small{display:block;margin-top:2px;font-size:12px}
+
+/* controls */
 .row{display:flex;gap:8px;flex-wrap:wrap}
-input[type=text],select{padding:11px 12px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font-size:16px}
+input[type=text],select{padding:11px 13px;border:1px solid var(--bd);border-radius:12px;background:var(--inp);color:var(--tx);font-size:15px;font-family:inherit}
 input[type=text]{flex:1;min-width:200px}
-button{padding:11px 16px;border:0;border-radius:10px;background:var(--ac);color:#fff;font-weight:600;font-size:15px;cursor:pointer}
-button.sec{background:var(--bg);color:var(--tx);border:1px solid var(--bd);padding:6px 10px;font-size:12px}
-button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,.chip:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-label{font-size:13px;color:var(--mut);display:inline-flex;align-items:center;gap:5px;margin:8px 14px 0 0}
-.sum{color:var(--mut);font-size:13px;margin:6px 0 12px}
-.fh{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-.fh h3{margin:0;font-size:15px;word-break:break-all}
-.badge{font-size:11px;border-radius:10px;padding:2px 8px;background:var(--hi);margin-left:6px;font-weight:400;white-space:nowrap}
+button{padding:11px 18px;border:0;border-radius:12px;background:var(--btn);color:#fff;font-weight:600;font-size:15px;font-family:inherit;cursor:pointer;box-shadow:0 6px 16px var(--btnsh);transition:transform .12s,box-shadow .12s,background .12s}
+button:hover{transform:translateY(-1px);box-shadow:0 8px 20px var(--btnsh)}
+button.sec{background:var(--inp);color:var(--tx);border:1px solid var(--bd);padding:7px 12px;font-size:12px;box-shadow:none}
+button.sec:hover{border-color:var(--ac);box-shadow:0 0 0 3px var(--ring);transform:none}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,.chip:focus-visible,#drop:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+input[type=text]:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--ring);outline:none}
+input[type=checkbox]{accent-color:var(--ac);width:15px;height:15px}
+label{font-size:13px;color:var(--mut);display:inline-flex;align-items:center;gap:6px;margin:10px 16px 0 0;cursor:pointer}
+.sum{color:var(--mut);font-size:13px;margin:6px 0 10px;overflow-wrap:anywhere;word-break:break-word}
+.side .card,.main .card{overflow-wrap:anywhere}
+.side .card,.main .card{min-width:0}
+.err{color:var(--bad);font-size:13px}
+
+/* file list */
+.files{margin-top:10px}
+details.fbox>summary{cursor:pointer;font-weight:600;font-size:14px;padding:4px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+details.grp{border:1px solid var(--bd);border-radius:12px;margin-top:8px;background:var(--inp)}
+details.grp>summary{cursor:pointer;padding:9px 12px;font-weight:600;font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+details.grp>summary .badge{margin-left:0;font-weight:400}
+details.grp>summary .x{margin-left:auto;font-size:12px;border:1px solid var(--bd);border-radius:8px;padding:2px 8px;background:transparent;color:var(--mut);cursor:pointer;font-family:inherit;box-shadow:none}
+details.grp>summary .x:hover{color:var(--bad);border-color:var(--bad);transform:none;box-shadow:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 12px;max-height:190px;overflow:auto}
+.chip{background:var(--card2);border:1px solid var(--bd);border-radius:20px;padding:3px 6px 3px 11px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;max-width:100%;transition:border-color .12s}
+.chip:hover{border-color:var(--ac)}
+.chip b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+.chip .rc{color:var(--mut);white-space:nowrap}
+.chip .x{border:0;background:transparent;color:var(--mut);padding:0 6px;font-size:16px;line-height:1;cursor:pointer;border-radius:10px;box-shadow:none;font-family:inherit}
+.chip .x:hover{color:var(--bad);transform:none;box-shadow:none}
+
+/* badges and notes */
+.badge{font-size:11px;border-radius:999px;padding:2px 9px;background:var(--hi);margin-left:6px;font-weight:500;white-space:nowrap;color:var(--tx)}
 .badge.l{background:var(--lk)}
 .badge.t{background:var(--lk);margin-left:0}
 .badge.w{background:var(--warn);color:#fff;margin-left:0}
-.wrap{overflow-x:auto;border:1px solid var(--bd);border-radius:8px;max-height:70vh}
-table{border-collapse:collapse;font-size:12px;width:max-content;min-width:100%}
-th,td{padding:5px 8px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap;max-width:320px;overflow:hidden;text-overflow:ellipsis}
-th{background:var(--bg);position:sticky;top:0;z-index:1}
-tr.lk td{background:var(--lk)}
-td.m{background:var(--hi)!important;font-weight:700;box-shadow:inset 0 0 0 1px var(--ac)}
-td.k{background:var(--ln)!important;font-weight:600}
-mark{background:var(--ac);color:#fff;border-radius:3px;padding:0 2px}
-.legend{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-size:12px;color:var(--mut);margin:4px 0 8px}
-.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--bd);vertical-align:-2px;margin-right:4px}
-.err{color:var(--bad);font-size:13px}
-.note{font-size:13px;border-left:3px solid var(--warn);background:var(--bg);padding:6px 10px;margin:0 0 8px;border-radius:0 8px 8px 0}
-.pills{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px}
+.pc{border-radius:999px;padding:2px 9px;font-size:11px;font-weight:700;color:#fff;white-space:nowrap}
+.pc.ok{background:var(--ok)}.pc.warn{background:var(--warn)}.pc.bad{background:var(--bad)}.pc.na{background:var(--mut)}
+.note{font-size:13px;border-left:3px solid var(--warn);background:var(--inp);padding:7px 12px;margin:0 0 8px;border-radius:0 10px 10px 0}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px}
 .pills .badge{margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:12px;color:var(--mut);margin:2px 0 12px}
+.legend i{display:inline-block;width:13px;height:13px;border-radius:4px;border:1px solid var(--bd);vertical-align:-2px;margin-right:5px}
+
+/* results */
+.fh{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.fh h3{margin:0;font-size:15px;word-break:break-all}
+.wrap{overflow:auto;border:1px solid var(--bd);border-radius:12px;max-height:70vh;background:var(--card2)}
+table{border-collapse:collapse;font-size:12px;width:max-content;min-width:100%}
+th,td{padding:6px 10px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap;max-width:320px;overflow:hidden;text-overflow:ellipsis}
+th{background:var(--th);color:var(--mut);font-weight:600;position:sticky;top:0;z-index:1}
+tr.lk td{background:var(--lk)}
+.wrap tr:hover td:not(.m):not(.k){background:var(--hov)}
+td.m{background:var(--hi)!important;font-weight:700;box-shadow:inset 0 0 0 1px var(--hl)}
+td.k{background:var(--ln)!important;font-weight:600}
+mark{background:var(--hl);color:#1d1500;border-radius:3px;padding:0 2px}
+
+/* collapsible checks and tree */
 details.card>summary{cursor:pointer;font-weight:600;font-size:14px}
-details.chk{border:1px solid var(--bd);border-radius:10px;margin-top:10px;background:var(--bg)}
-details.chk>summary{cursor:pointer;padding:10px 12px;font-weight:600;font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-details.chk .chkb{padding:0 12px 12px}
+details.chk{border:1px solid var(--bd);border-radius:12px;margin-top:10px;background:var(--inp)}
+details.chk>summary{cursor:pointer;padding:11px 14px;font-weight:600;font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+details.chk .chkb{padding:0 14px 14px}
 .tree{margin:10px 0 0;font-size:13px}
 .tree .nd{padding:3px 0}
 .tree .nd small{color:var(--mut)}
 .tree .kids{margin-left:8px;padding-left:14px;border-left:2px solid var(--bd)}
-.tree .off{opacity:.55}
-.cov{width:100%;font-size:13px;margin-top:10px;border-collapse:collapse}
-.cov td{white-space:normal;max-width:none;padding:5px 6px;border-bottom:1px solid var(--bd)}
-.pc{border-radius:10px;padding:1px 8px;font-size:11px;font-weight:600;color:#fff;white-space:nowrap}
-.pc.ok{background:var(--ok)}.pc.warn{background:var(--warn)}.pc.bad{background:var(--bad)}.pc.na{background:var(--mut)}
+.tree .off{opacity:.5}
+
+/* segmented filter */
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin:2px 0 10px;background:var(--inp)}
+.seg button{border-radius:0;box-shadow:none;background:transparent;color:var(--mut);padding:7px 14px;font-size:12px;font-weight:600;border-right:1px solid var(--bd)}
+.seg button:last-child{border-right:0}
+.seg button:hover{transform:none;box-shadow:none;background:var(--hov);color:var(--tx)}
+.seg button span{margin-left:4px;font-weight:500;opacity:.8}
+.seg button.on{background:var(--btn);color:#fff}
+.seg button.on:hover{background:var(--btn);color:#fff}
+
+/* empty state */
+.empty{display:grid;justify-items:center;text-align:center;padding:56px 20px;margin-bottom:14px}
+.empty .orb{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;color:var(--ac);background:radial-gradient(circle at 30% 25%,rgba(122,46,59,.20),rgba(127,127,127,.08));border:1px solid var(--bd);margin-bottom:18px}
+.empty h2{margin:0 0 6px;font-size:20px}
+.empty p{margin:0;max-width:440px;color:var(--mut);font-size:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<script>try{var t=localStorage.getItem("ps-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
-<h1>Parquet Search</h1>
-
-<div class="card">
-  <div id="drop" tabindex="0" role="button" aria-label="Choose files">Drop parquet, CSV or ZIP files here or tap to choose<br><small>Files stay on your device</small></div>
-  <input id="fi" type="file" accept=".parquet,.csv,.zip" multiple hidden>
-  <div id="status" class="sum" role="status"></div>
-  <div id="files" class="files"></div>
-  <input id="fd" type="file" webkitdirectory multiple hidden>
-  <div class="row" style="margin-top:10px">
-    <button class="sec" id="fdbtn">Choose a folder</button>
-    <button class="sec" id="zipbtn">Convert all to CSV (ZIP)</button>
-    <button class="sec" id="clrbtn">Clear all</button>
-    <span class="sum" style="margin:0;align-self:center">Tap a file chip to download just that CSV</span>
+<header class="top glass">
+  <div class="brand">
+    <div class="logo"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="7.5" ry="3"/><path d="M4.5 5.5v6.5c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3V5.5"/><path d="M4.5 12v6.5c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3V12"/></svg></div>
+    <div><h1>Parquet Search</h1><p>Trace orders, stops, routes and settlements across linked exports</p></div>
   </div>
-</div>
+  <button id="theme" class="icon-btn" type="button" aria-label="Switch theme"></button>
+</header>
 
-<details class="card" id="model" open hidden>
-  <summary>How your files link together</summary>
-  <div id="modelBody"></div>
-</details>
-
-<div class="card" id="checks" hidden>
-  <div class="fh"><b>Data checks</b><span class="sum" style="margin:0">Runs automatically after files load</span></div>
-  <div id="checksBody"></div>
-</div>
-
-<div class="card">
-  <div class="row">
-    <select id="field" aria-label="Search field">
-      <option value="auto">Any ID (auto-detect)</option>
-      <option value="order_number">Order number</option>
-      <option value="order_hash_id">Order hash ID</option>
-      <option value="stop_hash_id">Stop hash ID</option>
-      <option value="route_hash_id">Route hash ID</option>
-      <option value="item_hash_id">Item hash ID</option>
-      <option value="anno_hash_id">Annotation hash ID</option>
-      <option value="hist_hash_id">History hash ID</option>
-      <option value="event_hash_id">Event hash ID</option>
-    </select>
-    <input id="q" type="text" placeholder="Paste one or more IDs (separate with commas or spaces)…" autocomplete="off" aria-label="Search value">
-    <button id="go">Search</button>
+<div class="layout">
+<aside class="side">
+  <div class="card">
+    <h2 class="ct"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.5-8.97A6 6 0 0 1 18 8.5a4 4 0 0 1-.5 8"/><path d="M12 21v-8m0 0-3 3m3-3 3 3"/></svg>Add datasets</h2>
+    <div id="drop" tabindex="0" role="button" aria-label="Choose files">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.5-8.97A6 6 0 0 1 18 8.5a4 4 0 0 1-.5 8"/><path d="M12 21v-8m0 0-3 3m3-3 3 3"/></svg>
+      <b>Drag &amp; drop or click</b>
+      <small>Parquet, CSV or ZIP · files stay on your device</small>
+    </div>
+    <input id="fi" type="file" accept=".parquet,.csv,.zip" multiple hidden>
+    <div id="status" class="sum" role="status"></div>
+    <div id="files" class="files"></div>
+    <input id="fd" type="file" webkitdirectory multiple hidden>
+    <div class="row" style="margin-top:12px">
+      <button class="sec" id="fdbtn">Choose a folder</button>
+      <button class="sec" id="zipbtn">Convert all to CSV (ZIP)</button>
+      <button class="sec" id="clrbtn">Clear all</button>
+    </div>
+    <div class="sum" style="margin-bottom:0">Tap a file chip to download just that CSV</div>
   </div>
-  <label><input type="checkbox" id="part"> Partial match (slower)</label>
-  <label><input type="checkbox" id="hide" checked> Hide empty columns</label>
-  <label><input type="checkbox" id="exp" checked> Route search also shows its orders</label>
-  <div class="sum">Order → stop → route → events. Stops are the bridge between orders and routes. Results are shown in the order Orders → Stops → Routes → Settlements → others.</div>
+
+  <details class="card" id="model" open hidden>
+    <summary>How your files link together</summary>
+    <div id="modelBody"></div>
+  </details>
+</aside>
+
+<main class="main">
+  <div class="card">
+    <h2 class="ct"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</h2>
+    <div class="row">
+      <select id="field" aria-label="Search field">
+        <option value="auto">Any ID (auto-detect)</option>
+        <option value="order_number">Order number</option>
+        <option value="order_hash_id">Order hash ID</option>
+        <option value="stop_hash_id">Stop hash ID</option>
+        <option value="route_hash_id">Route hash ID</option>
+        <option value="settlement_hash_id">Settlement hash ID</option>
+        <option value="item_hash_id">Item hash ID</option>
+        <option value="anno_hash_id">Annotation hash ID</option>
+        <option value="hist_hash_id">History hash ID</option>
+        <option value="event_hash_id">Event hash ID</option>
+      </select>
+      <input id="q" type="text" placeholder="Paste one or more IDs (separate with commas or spaces)…" autocomplete="off" aria-label="Search value">
+      <button id="go">Search</button>
+    </div>
+    <label><input type="checkbox" id="part"> Partial match (slower)</label>
+    <label><input type="checkbox" id="hide" checked> Hide empty columns</label>
+    <label><input type="checkbox" id="exp" checked> Route search also shows its orders</label>
+    <div class="sum" style="margin-bottom:0">Results are shown in the order Orders → Stops → Routes → Settlements → others.</div>
+  </div>
+
+  <div class="card" id="checks" hidden>
+    <div class="fh" style="margin-bottom:0"><h2 class="ct" style="margin:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/></svg>Data checks</h2><span class="sum" style="margin:0">Runs automatically after files load</span></div>
+    <div id="checksBody"></div>
+  </div>
+
+  <div id="empty" class="card empty">
+    <div class="orb"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 10h18M3 15h18M9.5 4v16M15 4v16"/></svg></div>
+    <h2 id="emptyT">No data loaded</h2>
+    <p id="emptyS">Upload your parquet, CSV or ZIP files to search across orders, stops, routes and settlements.</p>
+  </div>
+
+  <div id="sum" class="sum" role="status"></div>
+  <div id="legend" class="legend" hidden><span><i style="background:var(--hi);box-shadow:inset 0 0 0 1px var(--hl)"></i>Searched value</span><span><i style="background:var(--ln)"></i>Linking key (order, stop, route or settlement ID)</span><span><i style="background:var(--lk)"></i>Linked row</span></div>
+  <div id="out"></div>
+</main>
 </div>
-<div id="sum" class="sum" role="status"></div>
-<div id="legend" class="legend" hidden><span><i style="background:var(--hi);box-shadow:inset 0 0 0 1px var(--ac)"></i>Searched value</span><span><i style="background:var(--ln)"></i>Linking key (order, stop or route ID)</span><span><i style="background:var(--lk)"></i>Linked row</span></div>
-<div id="out"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
 <script type="module">
 const $=id=>document.getElementById(id);
 
 /*ENGINE-START*/
-const KEYS=["order_number","order_hash_id","stop_hash_id","route_hash_id","item_hash_id","anno_hash_id","hist_hash_id","event_hash_id"];
+const KEYS=["order_number","order_hash_id","stop_hash_id","route_hash_id","settlement_hash_id","item_hash_id","anno_hash_id","hist_hash_id","event_hash_id"];
 // Which file type "owns" each key. null = every file that carries an order key.
-const OWN={order_number:null,order_hash_id:null,stop_hash_id:["stops"],route_hash_id:["routes"],item_hash_id:["items"],anno_hash_id:["annotations"],hist_hash_id:["histories"],event_hash_id:["events"]};
-const ORDER_SIDE=["orders","items","annotations","histories","stops"];
-const TYPE_ORDER=["orders","stops","routes","settlements","items","annotations","histories","events","other"];
-const LABEL={orders:"Orders",stops:"Stops",routes:"Routes",settlements:"Settlements",items:"Items",annotations:"Annotations",histories:"Histories",events:"Events",other:"Other"};
+const OWN={order_number:null,order_hash_id:null,stop_hash_id:["stops"],route_hash_id:["routes"],settlement_hash_id:["settlements"],item_hash_id:["items"],anno_hash_id:["annotations"],hist_hash_id:["histories","settlement_histories"],event_hash_id:["events"]};
+const ORDER_SIDE=["orders","items","annotations","histories","stops","settlement_stops"];
+const TYPE_ORDER=["orders","stops","routes","settlements","settlement_stops","settlement_histories","items","annotations","histories","events","other"];
+const LABEL={orders:"Orders",stops:"Stops",routes:"Routes",settlements:"Settlements",settlement_stops:"Settlement stops",settlement_histories:"Settlement histories",items:"Items",annotations:"Annotations",histories:"Histories",events:"Events",other:"Other"};
 // [child type, child column, parent type, parent column]
 const LINKS=[
   ["stops","order_hash_id","orders","order_hash_id"],
@@ -151,16 +265,23 @@ const norm=v=>String(v??"").trim().toLowerCase();
 // Identify a dataset from its columns first (reliable), then from its file name.
 function detectType(cols,name){
   const c=new Set(cols.map(norm));
-  if(/settle/i.test(String(name).split("/").pop()))return"settlements";
+  // settlement files carry settlement_hash_id (settlement_histories also has hist_hash_id, so check these first)
+  if(c.has("settlement_hash_id")){
+    if(c.has("hist_hash_id"))return"settlement_histories";
+    if(c.has("order_hash_id"))return"settlement_stops";
+    return"settlements";
+  }
   if(c.has("event_hash_id"))return"events";
   if(c.has("item_hash_id"))return"items";
   if(c.has("anno_hash_id"))return"annotations";
   if(c.has("hist_hash_id"))return"histories";
   if(c.has("stop_hash_id"))return"stops";
-  if(cols.some(x=>/^settle/.test(norm(x)))&&!c.has("number_of_stops"))return"settlements";
   if(c.has("order_hash_id")&&c.has("order_number"))return"orders";
   if(c.has("route_hash_id"))return"routes";
   const n=String(name).toLowerCase().split("/").pop().replace(/\.(parquet|csv)$/,"");
+  if(/settlement[_-]?stops?/.test(n))return"settlement_stops";
+  if(/settlement[_-]?histor/.test(n))return"settlement_histories";
+  if(/settle/.test(n))return"settlements";
   if(/event/.test(n))return"events";
   if(/annotation/.test(n))return"annotations";
   if(/histor/.test(n))return"histories";
@@ -207,9 +328,10 @@ function runSearch(store,{field,vals,partial,expandRoute}){
     const h=hit.get(s);
     if(kind==="d"){h.l.delete(i);h.d.add(i)}else if(!h.d.has(i))h.l.add(i);
   };
-  const K={order_hash_id:new Set(),order_number:new Set(),stop_hash_id:new Set(),route_hash_id:new Set()};
-  const take=(s,i,keys=Object.keys(K))=>{for(const k of keys){const v=keyOf(s,i,k);if(v)K[k].add(v)}};
-  const size=()=>K.order_hash_id.size+K.order_number.size+K.stop_hash_id.size+K.route_hash_id.size;
+  const K={order_hash_id:new Set(),order_number:new Set(),stop_hash_id:new Set(),route_hash_id:new Set(),settlement_hash_id:new Set()};
+  // settlement_histories carry a route_hash_id that doesn't match their settlement, so link them by settlement_hash_id only
+  const take=(s,i,keys=Object.keys(K))=>{for(const k of keys){if(k==="route_hash_id"&&s.type==="settlement_histories")continue;const v=keyOf(s,i,k);if(v)K[k].add(v)}};
+  const size=()=>Object.values(K).reduce((a,x)=>a+x.size,0);
   const usedFields=new Set();
 
   // 1. direct matches
@@ -228,7 +350,7 @@ function runSearch(store,{field,vals,partial,expandRoute}){
       if(any){usedFields.add(f);if(field==="auto")break}
     }
   }
-  const fromRoute=(usedFields.has("route_hash_id")||usedFields.has("event_hash_id"))&&
+  const fromRoute=(usedFields.has("route_hash_id")||usedFields.has("event_hash_id")||usedFields.has("settlement_hash_id"))&&
     !["order_number","order_hash_id","stop_hash_id","item_hash_id","anno_hash_id","hist_hash_id"].some(f=>usedFields.has(f));
 
   // generic "pull rows whose key is in a set" helper
@@ -246,6 +368,7 @@ function runSearch(store,{field,vals,partial,expandRoute}){
     const onRow=(s,i)=>{
       take(s,i,["order_hash_id","order_number"]);
       if(s.type==="stops"){take(s,i,["stop_hash_id"]);if(!fromRoute)take(s,i,["route_hash_id"])}
+      if(s.type==="settlement_stops"){take(s,i,["settlement_hash_id"]);if(!fromRoute)take(s,i,["route_hash_id"])}
     };
     let prev;
     do{
@@ -257,14 +380,21 @@ function runSearch(store,{field,vals,partial,expandRoute}){
 
   // 2. expand along relationships
   if(fromRoute){
+    // route / event / settlement search: the route, its settlement (+ its stops and history), its stops and events
+    pull(["settlements"],"route_hash_id",K.route_hash_id,(s,i)=>take(s,i,["settlement_hash_id"]));
+    pull(["settlement_stops"],"route_hash_id",K.route_hash_id,(s,i)=>{take(s,i,["settlement_hash_id"]);if(expandRoute)take(s,i,["order_hash_id","order_number"])});
+    pull(["settlement_stops","settlement_histories"],"settlement_hash_id",K.settlement_hash_id,(s,i)=>{if(expandRoute&&s.type==="settlement_stops")take(s,i,["order_hash_id","order_number"])});
     pull(["stops"],"route_hash_id",K.route_hash_id,(s,i)=>{if(expandRoute)take(s,i,["order_hash_id","order_number","stop_hash_id"])});
     if(expandRoute)orderSide();
   }else{
     orderSide();
   }
   pull(["routes","events"],"route_hash_id",K.route_hash_id);
-  // settlement files can carry any of the link keys
-  for(const k of Object.keys(K))pull(["settlements"],k,K[k]);
+  if(!fromRoute){
+    // order side: add the settlement of each route reached, plus that settlement's history (not its other stops)
+    pull(["settlements"],"route_hash_id",K.route_hash_id,(s,i)=>take(s,i,["settlement_hash_id"]));
+    pull(["settlements","settlement_histories"],"settlement_hash_id",K.settlement_hash_id);
+  }
 
   // 3. explain gaps in the chain
   const notes=[];
@@ -274,10 +404,10 @@ function runSearch(store,{field,vals,partial,expandRoute}){
     if(has("orders")&&!found("orders"))notes.push("The order record isn’t in the loaded orders file.");
     if(has("stops")&&!found("stops"))notes.push("No stop for this order is in the loaded stops file, so its route and events can’t be traced.");
   }
-  if(K.route_hash_id.size&&has("routes")&&!found("routes"))notes.push("The route referenced by these stops isn’t in the loaded routes file.");
+  if(K.route_hash_id.size&&has("routes")&&!found("routes"))notes.push("The route referenced by these results isn’t in the loaded routes file.");
   else if(K.route_hash_id.size&&has("routes")){
     const miss=[...K.route_hash_id].filter(r=>!store.some(s=>s.type==="routes"&&s.idx.route_hash_id?.has(r))).length;
-    if(miss)notes.push(`${miss} of ${K.route_hash_id.size} routes referenced by these stops aren’t in the loaded routes file.`);
+    if(miss)notes.push(`${miss} of ${K.route_hash_id.size} routes referenced by these results aren’t in the loaded routes file.`);
   }
   const res=store.map(s=>{
     const h=hit.get(s),num=(a,b)=>a-b;
@@ -311,35 +441,75 @@ function dataChecks(store){
   if(O.length){
     if(!S.length)out.orders={missing:"stops"};
     else{
-      const have=keysOf(S,"order_hash_id"),groups=new Map(),hashes=new Set();
-      let finished=0,flagged=0,noStatus=false;
+      const have=keysOf(S,"order_hash_id"),hashes=new Set();
+      const withSU=new Map(),withoutSU=new Map();
+      let finished=0,nWith=0,nWithout=0,noStatus=false,noSU=false;
       for(const s of O){
-        const sc=s.cols.find(c=>norm(c)==="status");
+        const sc=s.cols.find(c=>norm(c)==="status"),uc=s.cols.find(c=>norm(c)==="service_unit");
         if(!sc||!s.col.order_hash_id){noStatus=true;continue}
-        const ids=[];
+        if(!uc)noSU=true;
+        const a=[],b=[];
         for(let i=0;i<s.rows.length;i++){
           if(norm(str(s.rows[i][sc]))!=="finished")continue;
           finished++;
           const h=keyOf(s,i,"order_hash_id");
-          if(h&&!have.has(h)){ids.push(i);hashes.add(h)}
+          if(h&&!have.has(h)){
+            hashes.add(h);
+            (uc&&norm(str(s.rows[i][uc]))!==""?a:b).push(i);
+          }
         }
-        if(ids.length){groups.set(s,ids);flagged+=ids.length}
+        if(a.length){withSU.set(s,a);nWith+=a.length}
+        if(b.length){withoutSU.set(s,b);nWithout+=b.length}
       }
-      out.orders={groups,hashes,finished,flagged,noStatus};
+      out.orders={finished,flagged:nWith+nWithout,hashes,noStatus,noSU,
+        withSU:{groups:withSU,n:nWith},withoutSU:{groups:withoutSU,n:nWithout}};
     }
   }
   if(S.length){
     if(!R.length)out.routes={missing:"routes"};
     else{
-      const have=keysOf(R,"route_hash_id"),groups=new Map(),routeSet=new Set();
-      let flagged=0;
+      const have=keysOf(R,"route_hash_id");
+      // fallback only: order status from the orders file, used when a stops file has no status column of its own
+      const ost=new Map();
+      const needOrders=S.some(x=>!x.cols.some(c=>norm(c).includes("status")));
+      for(const s of needOrders?O:[]){
+        const sc=s.cols.find(c=>norm(c)==="status");
+        if(!sc||!s.col.order_hash_id)continue;
+        for(let i=0;i<s.rows.length;i++){const h=keyOf(s,i,"order_hash_id");if(h&&!ost.has(h))ost.set(h,str(s.rows[i][sc]).trim())}
+      }
+      // the stops file's own status column (status, stop_status, ...) is preferred
+      const pickStatusCol=s=>{
+        const c=s.cols.filter(x=>norm(x).includes("status"));
+        return c.find(x=>norm(x)==="status")||c.find(x=>/stop/.test(norm(x)))||c[0]||null;
+      };
+      // one record per missing route: its id and how many of its stops are scheduled / finished / other
+      const info=new Map(),srcCols=[];
+      let totalStops=0;
       for(const s of S){
         if(!s.idx.route_hash_id)continue;
-        const ids=[];
-        for(const[v,list]of s.idx.route_hash_id)if(!have.has(v)){routeSet.add(v);for(const i of list)ids.push(i)}
-        if(ids.length){ids.sort((a,b)=>a-b);groups.set(s,ids);flagged+=ids.length}
+        const sc=pickStatusCol(s);srcCols.push(sc);
+        const rc=s.col.route_hash_id;
+        for(const[v,list]of s.idx.route_hash_id){
+          if(have.has(v))continue;
+          let r=info.get(v);
+          if(!r){r={id:str(s.rows[list[0]][rc]),total:0,scheduled:0,finished:0,other:0};info.set(v,r)}
+          for(const i of list){
+            const label=(sc?str(s.rows[i][sc]).trim():ost.get(keyOf(s,i,"order_hash_id")))||"";
+            const n=label.toLowerCase();
+            r[n==="scheduled"?"scheduled":n==="finished"?"finished":"other"]++;
+            r.total++;totalStops++;
+          }
+        }
       }
-      out.routes={groups,routeSet,flagged};
+      const all=[...info.values()].sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0);
+      // routes per tab; "stops" is how many of the route's stops fall in that tab
+      const by={all:{routes:all,stops:totalStops}};
+      for(const k of["scheduled","finished","other"]){
+        const rs=all.filter(r=>r[k]>0);
+        by[k]={routes:rs,stops:rs.reduce((a,r)=>a+r[k],0)};
+      }
+      out.routes={by,flagged:totalStops,routeSet:new Set(info.keys()),hasOrders:O.length>0,
+        fromStops:srcCols.some(Boolean),noStatus:srcCols.every(v=>!v)};
     }
   }
   return out;
@@ -388,16 +558,34 @@ function parseCsv(t){
   return{cols,rows:out};
 }
 const cq=v=>'"'+String(v).replace(/"/g,'""')+'"';
-function csvOf(s,idx){
-  const out=[s.cols.map(cq).join(",")];
+function csvOf(s,idx,extra){
+  const out=[(extra?[cq(extra.name)]:[]).concat(s.cols.map(cq)).join(",")];
   const list=idx||s.rows.keys();
   for(const i of list){
     const r=s.rows[i];
-    out.push(s.cols.map(c=>cq(str(r[c]))).join(","));
+    out.push((extra?[cq(extra.get(i))]:[]).concat(s.cols.map(c=>cq(str(r[c])))).join(","));
   }
   return out.join("\n");
 }
 /*ENGINE-END*/
+
+
+// ---------- theme ----------
+const root=document.documentElement,mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;
+const effTheme=()=>root.dataset.theme||(mq&&mq.matches?"dark":"light");
+const SUN='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const MOON='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+function paintTheme(){const d=effTheme()==="dark";$("theme").innerHTML=d?SUN:MOON;$("theme").title=d?"Switch to light theme":"Switch to dark theme"}
+$("theme").onclick=()=>{const n=effTheme()==="dark"?"light":"dark";root.dataset.theme=n;try{localStorage.setItem("ps-theme",n)}catch(e){}paintTheme()};
+if(mq&&mq.addEventListener)mq.addEventListener("change",paintTheme);
+paintTheme();
+
+// ---------- empty state ----------
+function updateEmpty(){
+  $("empty").hidden=!!(store.length&&view);
+  if(!store.length){$("emptyT").textContent="No data loaded";$("emptyS").textContent="Upload your parquet, CSV or ZIP files to search across orders, stops, routes and settlements."}
+  else{$("emptyT").textContent="Ready to search";$("emptyS").textContent=`${store.length.toLocaleString()} file${store.length===1?"":"s"} loaded. Enter an order number or any ID above to trace it across the files.`}
+}
 
 // ---------- loading ----------
 let libP=null;
@@ -421,6 +609,8 @@ const LIM=200;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const ext=n=>(String(n).toLowerCase().match(/\.(parquet|csv|zip)$/)||[])[1];
 const base=n=>n.split("/").pop();
+// short label for chips: "ferguson_dispatchtrack_orders_data-1_converted.csv" -> "ferguson_orders" (full name stays in the tooltip)
+const short=n=>{const b=base(n).replace(/\.(parquet|csv)$/i,"").replace(/_dispatchtrack_/i,"_").replace(/_data-\d+.*$/i,"");return b||base(n)};
 const setStatus=(t,isErr)=>{$("status").innerHTML=isErr?`<span class="err">${t}</span>`:esc(t)};
 const tick=()=>new Promise(r=>setTimeout(r));
 
@@ -462,7 +652,7 @@ async function load(files){
   const worker=async()=>{
     while(cursor<jobs.length){
       const j=jobs[cursor++];
-      setStatus(`Reading ${++done}/${jobs.length}: ${j.name}`);
+      setStatus(`Reading ${++done}/${jobs.length} · ${base(j.name)}`);
       await tick();
       try{
         const rec=buildIndexes(await readJob(j));
@@ -479,24 +669,53 @@ async function load(files){
 }
 
 // ---------- file chips ----------
+const grpOpen={};      // user's open/closed choice per file group
+let filesOpen=true;    // whole "Loaded files" box
 function renderFiles(){
-  $("files").innerHTML=store.map((s,i)=>
-    `<span class="chip" data-i="${i}" tabindex="0" title="${esc(s.name)} — click to download as CSV"><b>${esc(base(s.name))}</b><span class="badge ${s.type==="other"?"w":"t"}">${LABEL[s.type]}</span>${s.rows.length.toLocaleString()} rows<button class="x" data-x="${i}" aria-label="Remove ${esc(base(s.name))}" title="Remove">×</button></span>`
-  ).join("");
-}
-$("files").addEventListener("click",e=>{
-  const x=e.target.closest("[data-x]");
-  if(x){
-    e.stopPropagation();
-    store.splice(+x.dataset.x,1);
-    view=null;$("out").innerHTML="";$("legend").hidden=true;$("sum").textContent="";
-    renderFiles();renderModel();renderChecks();
-    return;
+  updateEmpty();
+  if(!store.length){$("files").innerHTML="";return}
+  const groups={};
+  store.forEach((s,i)=>{(groups[s.type]||(groups[s.type]=[])).push(i)});
+  const nGroups=Object.keys(groups).length;
+  const totalRows=store.reduce((a,s)=>a+s.rows.length,0);
+  let h=`<details class="fbox" id="filesBox"${filesOpen?" open":""}><summary>Loaded files <span class="badge t">${store.length.toLocaleString()} file${store.length===1?"":"s"} · ${totalRows.toLocaleString()} rows</span></summary>`;
+  for(const t of TYPE_ORDER){
+    const ids=groups[t];
+    if(!ids)continue;
+    const rows=ids.reduce((a,i)=>a+store[i].rows.length,0);
+    const open=grpOpen[t]!==undefined?grpOpen[t]:(nGroups<=4&&ids.length<=8);
+    const title=t==="other"?"Other / unrecognized":LABEL[t];
+    h+=`<details class="grp" data-t="${t}"${open?" open":""}><summary><span>${title}</span><span class="badge ${t==="other"?"w":"t"}">${ids.length.toLocaleString()} file${ids.length===1?"":"s"} · ${rows.toLocaleString()} rows</span><button class="x" data-rmt="${t}" title="Remove all ${title} files" aria-label="Remove all ${title} files">Remove all</button></summary><div class="chips">`;
+    for(const i of ids){
+      const s=store[i];
+      h+=`<span class="chip" data-i="${i}" tabindex="0" title="${esc(s.name)} — click to download as CSV"><b>${esc(short(s.name))}</b><span class="rc">${s.rows.length.toLocaleString()} rows</span><button class="x" data-x="${i}" aria-label="Remove ${esc(base(s.name))}" title="Remove">×</button></span>`;
+    }
+    h+="</div></details>";
   }
+  $("files").innerHTML=h+"</details>";
+}
+const afterRemove=()=>{view=null;$("out").innerHTML="";$("legend").hidden=true;$("sum").textContent="";renderFiles();renderModel();renderChecks()};
+$("files").addEventListener("click",e=>{
+  const rt=e.target.closest("[data-rmt]");
+  if(rt){
+    e.preventDefault();e.stopPropagation(); // don't toggle the group
+    for(let k=store.length-1;k>=0;k--)if(store[k].type===rt.dataset.rmt)store.splice(k,1);
+    afterRemove();return;
+  }
+  const x=e.target.closest("[data-x]");
+  if(x){e.stopPropagation();store.splice(+x.dataset.x,1);afterRemove();return}
   const c=e.target.closest("[data-i]");
   if(c){const s=store[+c.dataset.i];save(new Blob(["\ufeff"+csvOf(s)],{type:"text/csv"}),csvName(s.name))}
 });
 $("files").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("[data-i]"))e.target.click()});
+// remember only what the user clicks (redrawing the list must not overwrite the default for big groups)
+$("files").addEventListener("click",e=>{
+  const sm=e.target.closest("summary");
+  if(!sm||e.target.closest("button"))return;
+  const d=sm.parentElement;
+  if(d.id==="filesBox")filesOpen=!d.open;
+  else if(d.dataset&&d.dataset.t)grpOpen[d.dataset.t]=!d.open;
+});
 
 // ---------- relationship panel ----------
 function renderModel(){
@@ -516,8 +735,15 @@ function renderModel(){
       node("stops","the bridge: each stop carries order_hash_id and route_hash_id")+
       `<div class="kids">`+
         node("routes","one row per route · stops point to it by route_hash_id")+
-        (rowsOf("settlements")?node("settlements","linked by whichever order, stop or route key the file carries"):"")+
-        `<div class="kids">`+node("events","lunch, reload and other route events · linked by route_hash_id")+`</div>`+
+        `<div class="kids">`+
+          ((rowsOf("settlements")||rowsOf("settlement_stops")||rowsOf("settlement_histories"))?
+            node("settlements","one per route · settlement_hash_id, route_hash_id")+
+            `<div class="kids">`+
+              node("settlement_stops","one row per order · settlement_hash_id + order_hash_id / order_number (links back to Orders)")+
+              node("settlement_histories","status history · settlement_hash_id")+
+            `</div>`:"")+
+          node("events","lunch, reload and other route events · linked by route_hash_id")+
+        `</div>`+
       `</div>`+
     `</div>`;
   const other=store.filter(s=>s.type==="other");
@@ -527,58 +753,94 @@ function renderModel(){
 
 // ---------- data checks ----------
 let checkState={orders:null,routes:null};
-function rowsTable(s,ids,hide){
+function rowsTable(s,ids,hide,extra){
   const LIMC=200,shown=ids.slice(0,LIMC);
   let cols=s.cols;
   if(hide)cols=cols.filter(c=>shown.some(i=>str(s.rows[i][c])!==""));
-  let h=`<div class="wrap"><table><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr>`;
+  let h=`<div class="wrap"><table><tr>${extra?`<th>${esc(extra.name)}</th>`:""}${cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr>`;
   for(const i of shown){
-    h+="<tr>"+cols.map(c=>{const v=str(s.rows[i][c]);return `<td${v.length>30?` title="${esc(v)}"`:""}>${esc(v)}</td>`}).join("")+"</tr>";
+    h+="<tr>"+(extra?`<td style="font-weight:600">${esc(extra.get(i))}</td>`:"")+cols.map(c=>{const v=str(s.rows[i][c]);return `<td${v.length>30?` title="${esc(v)}"`:""}>${esc(v)}</td>`}).join("")+"</tr>";
   }
   h+="</table></div>";
   if(ids.length>LIMC)h+=`<div class="sum">Showing ${LIMC} of ${ids.length.toLocaleString()} rows (CSV has all).</div>`;
   return h;
 }
-const chkOpen={orders:false,routes:false};
+const chkOpen={orders_su:false,orders_nosu:false,routes:false};
+let routeFilter="all";
 function renderChecks(){
   checkState=dataChecks(store);
   const{orders:o,routes:r}=checkState;
   $("checks").hidden=!(o||r);
   if(!(o||r)){$("checksBody").innerHTML="";return}
   const hide=$("hide").checked;
-  const section=(title,pill,summary,groups,kind)=>{
-    let h=`<details class="chk" data-k="${kind}"${chkOpen[kind]?" open":""}><summary><span>${title}</span> ${pill}</summary><div class="chkb"><div class="fh"><span class="sum" style="margin:0">${summary}</span>${groups&&groups.size?`<button class="sec" data-chk="${kind}">Download CSV</button>`:""}</div>`;
-    if(groups)for(const[s,ids]of groups)h+=`<div class="sum" style="margin:4px 0">${esc(base(s.name))}</div>`+rowsTable(s,ids,hide);
+  const section=(title,pill,summary,groups,kind,opts={})=>{
+    let h=`<details class="chk" data-k="${kind}"${chkOpen[kind]?" open":""}><summary><span>${title}</span> ${pill}</summary><div class="chkb"><div class="fh"><span class="sum" style="margin:0">${summary}</span>${(opts.dl!==undefined?opts.dl:groups&&groups.size)?`<button class="sec" data-chk="${kind}">Download CSV</button>`:""}</div>${opts.bar||""}${opts.body||""}`;
+    if(groups)for(const[s,ids]of groups)h+=`<div class="sum" style="margin:4px 0">${esc(base(s.name))}</div>`+rowsTable(s,ids,hide,opts.extra&&opts.extra(s));
     return h+"</div></details>";
   };
   const na=t=>`<span class="pc na">${t}</span>`;
   let h="";
   if(o){
     const T="Finished orders with no stop";
-    if(o.missing)h+=section(T,na("needs a "+o.missing+" file"),`Load a ${o.missing} file to run this check.`,null,"orders");
-    else if(o.noStatus&&!o.finished)h+=section(T,na("no status column"),"The orders file has no status or order_hash_id column.",null,"orders");
-    else h+=section(T,o.flagged?`<span class="pc bad">${o.flagged.toLocaleString()} flagged</span>`:`<span class="pc ok">None</span>`,
-      o.flagged?`${o.flagged.toLocaleString()} of ${o.finished.toLocaleString()} Finished orders have no row in the stops file.`
-               :`All ${o.finished.toLocaleString()} Finished orders have a stop.`,o.groups,"orders");
+    if(o.missing)h+=section(T,na("needs a "+o.missing+" file"),`Load a ${o.missing} file to run this check.`,null,"orders_su");
+    else if(o.noStatus&&!o.finished)h+=section(T,na("no status column"),"The orders file has no status or order_hash_id column.",null,"orders_su");
+    else{
+      const pill=n=>n?`<span class="pc bad">${n.toLocaleString()} flagged</span>`:`<span class="pc ok">None</span>`;
+      h+=section(T+" · with service_unit",pill(o.withSU.n),
+        o.withSU.n?`${o.withSU.n.toLocaleString()} of ${o.finished.toLocaleString()} Finished orders have no stop and have a service_unit value.`
+                  :"No Finished order without a stop has a service_unit value.",o.withSU.groups,"orders_su");
+      h+=section(T+" · without service_unit",pill(o.withoutSU.n),
+        (o.noSU?"The orders file has no service_unit column, so every flagged order is listed here. ":"")+
+        (o.withoutSU.n?`${o.withoutSU.n.toLocaleString()} of ${o.finished.toLocaleString()} Finished orders have no stop and a blank service_unit.`
+                      :"No Finished order without a stop has a blank service_unit."),o.withoutSU.groups,"orders_nosu");
+    }
   }
   if(r){
     const T="Routes in stops but missing from routes";
     if(r.missing)h+=section(T,na("needs a "+r.missing+" file"),`Load a ${r.missing} file to run this check.`,null,"routes");
-    else h+=section(T,r.flagged?`<span class="pc bad">${r.routeSet.size.toLocaleString()} route(s)</span>`:`<span class="pc ok">None</span>`,
-      r.flagged?`${r.routeSet.size.toLocaleString()} route(s) used by ${r.flagged.toLocaleString()} stop(s) are not in the routes file.`
-               :"Every route_hash_id in the stops file is in the routes file.",r.groups,"routes");
+    else if(!r.flagged)h+=section(T,`<span class="pc ok">None</span>`,"Every route_hash_id in the stops file is in the routes file.",null,"routes");
+    else{
+      const f=routeFilter,cur=r.by[f];
+      const tabs=[["all","All"],["scheduled","Scheduled"],["finished","Finished"],["other","Other / unknown"]];
+      const bar=`<div class="seg" role="group" aria-label="Filter by status">${tabs.map(([k,l])=>`<button type="button" data-rf="${k}" class="${k===f?"on":""}" aria-pressed="${k===f}">${l} <span>${r.by[k].routes.length.toLocaleString()}</span></button>`).join("")}</div>`;
+      const LIMR=500,shown=cur.routes.slice(0,LIMR);
+      const body=cur.routes.length
+        ?`<div class="wrap"><table><tr><th>route_hash_id</th><th>stops${f==="all"?"":" ("+f+")"}</th><th>scheduled</th><th>finished</th><th>other</th></tr>${shown.map(x=>`<tr><td>${esc(x.id)}</td><td>${(f==="all"?x.total:x[f]).toLocaleString()}</td><td>${x.scheduled}</td><td>${x.finished}</td><td>${x.other}</td></tr>`).join("")}</table></div>`
+          +(cur.routes.length>LIMR?`<div class="sum">Showing ${LIMR} of ${cur.routes.length.toLocaleString()} routes (CSV has all).</div>`:"")
+        :`<div class="sum">No routes in this group.</div>`;
+      h+=section(T,`<span class="pc bad">${r.routeSet.size.toLocaleString()} route(s)</span>`,
+        `${r.routeSet.size.toLocaleString()} route(s) used by ${r.flagged.toLocaleString()} stop(s) are not in the routes file. `+
+        (r.fromStops?"Status is read from the stops file’s own status column. ":
+          r.noStatus&&!r.hasOrders?"The stops file has no status column, so every stop is counted as “Other / unknown”. ":
+          "The stops file has no status column, so the order’s status from the orders file is used. ")+
+        `Showing ${cur.routes.length.toLocaleString()} route(s)${f==="all"?"":" with at least one "+(f==="other"?"other / unknown":f)+" stop"}.`,
+        null,"routes",{bar,body,dl:cur.routes.length>0});
+    }
   }
   $("checksBody").innerHTML=h;
 }
 // remember which sections the user opened (toggle doesn't bubble, so listen in the capture phase)
 $("checksBody").addEventListener("toggle",e=>{const d=e.target;if(d.dataset&&d.dataset.k)chkOpen[d.dataset.k]=d.open},true);
 $("checksBody").addEventListener("click",e=>{
+  const rf=e.target.closest("[data-rf]");
+  if(rf){routeFilter=rf.dataset.rf;chkOpen.routes=true;renderChecks();return}
   const b=e.target.closest("[data-chk]");
   if(!b)return;
-  const c=checkState[b.dataset.chk];
-  if(!c||!c.groups)return;
-  const tag=b.dataset.chk==="orders"?"finished_orders_without_stops":"stops_with_missing_routes";
-  for(const[s,ids]of c.groups)save(new Blob(["\ufeff"+csvOf(s,ids)],{type:"text/csv"}),base(s.name).replace(/\.(parquet|csv)$/i,"")+"_"+tag+".csv");
+  const k=b.dataset.chk,c=checkState;
+  if(k==="routes"){
+    const r=c.routes;
+    if(!r||!r.by)return;
+    const f=routeFilter,rows=r.by[f].routes;
+    const lines=[["route_hash_id","stops"+(f==="all"?"":"_"+f),"scheduled","finished","other"].map(cq).join(",")]
+      .concat(rows.map(x=>[x.id,f==="all"?x.total:x[f],x.scheduled,x.finished,x.other].map(cq).join(",")));
+    save(new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv"}),"routes_missing_from_routes_file"+(f==="all"?"":"_"+f)+".csv");
+    return;
+  }
+  const groups=k==="orders_su"?c.orders&&c.orders.withSU&&c.orders.withSU.groups
+              :k==="orders_nosu"?c.orders&&c.orders.withoutSU&&c.orders.withoutSU.groups:null;
+  if(!groups)return;
+  const tag={orders_su:"finished_orders_no_stop_with_service_unit",orders_nosu:"finished_orders_no_stop_without_service_unit"}[k];
+  for(const[s,ids]of groups)save(new Blob(["\ufeff"+csvOf(s,ids)],{type:"text/csv"}),base(s.name).replace(/\.(parquet|csv)$/i,"")+"_"+tag+".csv");
 });
 
 // ---------- input wiring ----------
@@ -622,7 +884,7 @@ function show(){
   const hide=$("hide").checked;
   const{K}=view;
   const hitVal=n=>n&&vals.find(q=>partial?n.includes(q):n===q);
-  const LINKK=["order_hash_id","order_number","stop_hash_id","route_hash_id"];
+  const LINKK=["order_hash_id","order_number","stop_hash_id","route_hash_id","settlement_hash_id"];
   const markPart=(v,q)=>{
     const at=v.toLowerCase().indexOf(q);
     return at<0?esc(v):esc(v.slice(0,at))+"<mark>"+esc(v.slice(at,at+q.length))+"</mark>"+esc(v.slice(at+q.length));
@@ -665,6 +927,7 @@ function show(){
   $("sum").innerHTML=esc(head)+(pills?`<div class="pills">${pills}</div>`:"")+notes.map(n=>`<div class="note">${esc(n)}</div>`).join("");
   $("out").innerHTML=html;
   $("legend").hidden=!ordered.length;
+  updateEmpty();
 }
 $("out").addEventListener("click",e=>{
   const m=e.target.closest("[data-more]");
