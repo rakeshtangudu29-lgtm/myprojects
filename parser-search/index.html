@@ -13,7 +13,7 @@
   --ac:#7d2f42;--btn:#7d2f42;--btnh:#6a2535;--ring:rgba(125,47,66,.28);
   --hl:#c28f00;--hi:#fbe9a8;--lk:#eeece8;--ln:#cfe6d6;--hov:rgba(29,27,25,.05);
   --ok:#1a7f37;--warn:#8a5a00;--bad:#b42318;
-  --glow1:rgba(125,47,66,.07);--glow2:rgba(120,113,108,.10);
+  --g1:rgba(176,56,86,.24);--g2:rgba(214,150,40,.24);--g3:rgba(38,150,138,.20);--g4:rgba(124,92,200,.20);
   --shadow:0 1px 2px rgba(29,27,25,.05),0 6px 20px rgba(29,27,25,.05);
   --t-orders:#b86a45;--t-stops:#5b8f80;--t-routes:#6b72a8;--t-settlements:#b05577;--t-settlement_stops:#c27a94;--t-settlement_histories:#d29aaf;--t-items:#8b7d6b;--t-annotations:#a39684;--t-histories:#b8ac9a;--t-events:#4f8a99;--t-other:#8a8a8a;
   --ease:cubic-bezier(.16,1,.3,1);
@@ -24,7 +24,7 @@
   --ac:#d99aa9;--btn:#8e3a4e;--btnh:#a14760;--ring:rgba(217,154,169,.35);
   --hl:#e0b020;--hi:#5e4b0a;--lk:rgba(255,255,255,.06);--ln:#24573a;--hov:rgba(255,255,255,.06);
   --ok:#23783b;--warn:#8f6008;--bad:#b83c30;
-  --glow1:rgba(150,60,80,.13);--glow2:rgba(255,255,255,.04);--shadow:none;
+  --g1:rgba(200,64,98,.36);--g2:rgba(224,156,44,.25);--g3:rgba(40,170,154,.26);--g4:rgba(140,106,226,.28);--shadow:none;
   --t-orders:#d08a63;--t-stops:#7fb3a3;--t-routes:#9096d1;--t-settlements:#d27a9b;--t-settlement_stops:#dd97b0;--t-settlement_histories:#e8b7c8;--t-items:#b3a48f;--t-annotations:#c4b8a6;--t-histories:#d0c6b6;--t-events:#6fb0c0;--t-other:#9a9a9a;
   color-scheme:dark}}
 :root[data-theme="dark"]{
@@ -33,24 +33,28 @@
   --ac:#d99aa9;--btn:#8e3a4e;--btnh:#a14760;--ring:rgba(217,154,169,.35);
   --hl:#e0b020;--hi:#5e4b0a;--lk:rgba(255,255,255,.06);--ln:#24573a;--hov:rgba(255,255,255,.06);
   --ok:#23783b;--warn:#8f6008;--bad:#b83c30;
-  --glow1:rgba(150,60,80,.13);--glow2:rgba(255,255,255,.04);--shadow:none;
+  --g1:rgba(200,64,98,.36);--g2:rgba(224,156,44,.25);--g3:rgba(40,170,154,.26);--g4:rgba(140,106,226,.28);--shadow:none;
   --t-orders:#d08a63;--t-stops:#7fb3a3;--t-routes:#9096d1;--t-settlements:#d27a9b;--t-settlement_stops:#dd97b0;--t-settlement_histories:#e8b7c8;--t-items:#b3a48f;--t-annotations:#c4b8a6;--t-histories:#d0c6b6;--t-events:#6fb0c0;--t-other:#9a9a9a;
   color-scheme:dark}
 *{box-sizing:border-box;scrollbar-width:thin;scrollbar-color:var(--bd2) transparent}
 [hidden]{display:none!important}
 html{background:var(--bg)}
-body{margin:0;min-height:100vh;color:var(--tx);background:var(--bg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:16px;font-variant-numeric:tabular-nums}
+body{margin:0;min-height:100vh;color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:16px;font-variant-numeric:tabular-nums}
 ::selection{background:color-mix(in srgb,var(--ac) 32%,transparent)}
 input,select{caret-color:var(--ac)}
 .theme-anim,.theme-anim *{transition:background-color .2s,border-color .2s,color .2s!important}
 
-/* ambient background: two slow glows, transform-only, paused while busy/hidden */
+/* ambient background: four slow colour glows, transform-only, paused while busy/hidden/heavy */
 .bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;contain:strict}
-.bg i{position:absolute;width:60vmax;height:60vmax;border-radius:50%;will-change:transform}
-.bg i:nth-child(1){top:-30vmax;left:-15vmax;background:radial-gradient(closest-side,var(--glow1),transparent);animation:drift1 70s ease-in-out infinite alternate}
-.bg i:nth-child(2){bottom:-35vmax;right:-20vmax;background:radial-gradient(closest-side,var(--glow2),transparent);animation:drift2 90s ease-in-out infinite alternate}
-@keyframes drift1{to{transform:translate3d(18vmax,10vmax,0)}}
-@keyframes drift2{to{transform:translate3d(-16vmax,-12vmax,0)}}
+.bg i{position:absolute;width:64vmax;height:64vmax;border-radius:50%;will-change:transform}
+.bg i:nth-child(1){top:-28vmax;left:-14vmax;background:radial-gradient(closest-side,var(--g1),transparent);animation:drift1 64s ease-in-out infinite alternate}
+.bg i:nth-child(2){top:8vmax;right:-24vmax;background:radial-gradient(closest-side,var(--g2),transparent);animation:drift2 82s ease-in-out infinite alternate}
+.bg i:nth-child(3){bottom:-32vmax;left:12vmax;background:radial-gradient(closest-side,var(--g3),transparent);animation:drift3 96s ease-in-out infinite alternate}
+.bg i:nth-child(4){bottom:-20vmax;right:-8vmax;background:radial-gradient(closest-side,var(--g4),transparent);animation:drift4 74s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate3d(22vmax,12vmax,0) scale(1.08)}}
+@keyframes drift2{to{transform:translate3d(-20vmax,16vmax,0) scale(.94)}}
+@keyframes drift3{to{transform:translate3d(18vmax,-14vmax,0) scale(1.1)}}
+@keyframes drift4{to{transform:translate3d(-22vmax,-10vmax,0) scale(.92)}}
 .busy .bg i,.hid .bg i,.heavy .bg i{animation-play-state:paused}
 
 /* surfaces */
@@ -110,11 +114,6 @@ kbd{font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding
 .search input[type=text]{font-size:16px}
 .search button#go{padding:0 26px;font-size:15px}
 .hint{font-size:12px;color:var(--mut);margin:12px 0 0}
-.recent{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:12px}
-.recent>span{font-size:12px;color:var(--mut);margin-right:2px}
-.recent button{height:auto;padding:3px 10px;border-radius:999px;background:var(--sunk);color:var(--tx);border:1px solid transparent;font-size:12px;font-weight:500;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.recent button:hover{border-color:var(--bd2);background:var(--sunk)}
-.recent .clr{background:none;color:var(--mut);text-decoration:underline;text-underline-offset:3px}
 
 /* disclosure (details) */
 summary{cursor:pointer;list-style:none}
@@ -216,7 +215,7 @@ details.chk .chkb{padding:0 2px 16px}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 @media (prefers-reduced-motion:reduce){
-  .bg i:nth-child(1),.bg i:nth-child(2){animation:none}
+  .bg i:nth-child(n){animation:none}
   .fresh .card,.fresh .wrap td.m,details[open]>.chkb,details[open]>.chips,details[open]>#modelBody{animation:none}
   *{transition-duration:.01ms!important}
   #drop:hover svg,#drop.over svg{transform:none}
@@ -225,7 +224,7 @@ details.chk .chkb{padding:0 2px 16px}
 <script>try{var t=localStorage.getItem("ps-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
-<div class="bg" aria-hidden="true"><i></i><i></i></div>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <header class="top">
   <div class="brand">
     <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="7.5" ry="3"/><path d="M4.5 5.5v6.5c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3V5.5"/><path d="M4.5 12v6.5c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3V12"/></svg></div>
@@ -287,7 +286,6 @@ details.chk .chkb{padding:0 2px 16px}
     <label><input type="checkbox" id="hide" checked> Hide empty columns</label>
     <label><input type="checkbox" id="exp" checked> Include orders when searching a route</label>
     <div class="hint">Press <kbd>/</kbd> to focus search, <kbd>Esc</kbd> to clear. Results follow the order Orders → Stops → Routes → Settlements → others.</div>
-    <div id="recent" class="recent" hidden></div>
   </section>
 
   <section class="card" id="checks" hidden aria-label="Data checks">
@@ -567,9 +565,23 @@ function dataChecks(store){
         const c=s.cols.filter(x=>norm(x).includes("status"));
         return c.find(x=>norm(x)==="status")||c.find(x=>/stop/.test(norm(x)))||c[0]||null;
       };
-      // one record per missing route: its id and how many of its stops are scheduled / finished / other
+      // delivery_date of each order, from the Orders file (matched by order_hash_id, then order_number)
+      const dateByHash=new Map(),dateByNum=new Map();
+      for(const s of O){
+        const dc=s.cols.find(c=>norm(c)==="delivery_date");
+        if(!dc)continue;
+        for(let i=0;i<s.rows.length;i++){
+          const d=fmtDate(str(s.rows[i][dc]));
+          if(!d)continue;
+          const h=keyOf(s,i,"order_hash_id"),n=keyOf(s,i,"order_number");
+          if(h&&!dateByHash.has(h))dateByHash.set(h,d);
+          if(n&&!dateByNum.has(n))dateByNum.set(n,d);
+        }
+      }
+      // one record per missing route: its id, how many of its stops are scheduled / finished / other,
+      // and the orders (order_number + delivery_date) those stops belong to
       const info=new Map(),srcCols=[];
-      let totalStops=0;
+      let totalStops=0,hasDates=false;
       for(const s of S){
         if(!s.idx.route_hash_id)continue;
         const sc=pickStatusCol(s);srcCols.push(sc);
@@ -577,12 +589,17 @@ function dataChecks(store){
         for(const[v,list]of s.idx.route_hash_id){
           if(have.has(v))continue;
           let r=info.get(v);
-          if(!r){r={id:str(s.rows[list[0]][rc]),total:0,scheduled:0,finished:0,other:0};info.set(v,r)}
+          if(!r){r={id:str(s.rows[list[0]][rc]),total:0,scheduled:0,finished:0,other:0,ord:{all:new Map(),scheduled:new Map(),finished:new Map(),other:new Map()}};info.set(v,r)}
+          const onc=s.col.order_number,dcs=s.cols.find(c=>norm(c)==="delivery_date");
           for(const i of list){
             const label=(sc?str(s.rows[i][sc]).trim():ost.get(keyOf(s,i,"order_hash_id")))||"";
-            const n=label.toLowerCase();
-            r[n==="scheduled"?"scheduled":n==="finished"?"finished":"other"]++;
-            r.total++;totalStops++;
+            const n=label.toLowerCase(),k=n==="scheduled"?"scheduled":n==="finished"?"finished":"other";
+            r[k]++;r.total++;totalStops++;
+            const on=onc?str(s.rows[i][onc]).trim():"",h=keyOf(s,i,"order_hash_id");
+            const dt=(h&&dateByHash.get(h))||(on&&dateByNum.get(norm(on)))||(dcs?fmtDate(str(s.rows[i][dcs])):"")||"";
+            if(dt)hasDates=true;
+            const key=on||(h?"hash:"+h:"");
+            if(key){for(const kk of["all",k])if(!r.ord[kk].has(key))r.ord[kk].set(key,dt)}
           }
         }
       }
@@ -593,7 +610,7 @@ function dataChecks(store){
         const rs=all.filter(r=>r[k]>0);
         by[k]={routes:rs,stops:rs.reduce((a,r)=>a+r[k],0)};
       }
-      out.routes={by,flagged:totalStops,routeSet:new Set(info.keys()),hasOrders:O.length>0,
+      out.routes={by,flagged:totalStops,hasDates,routeSet:new Set(info.keys()),hasOrders:O.length>0,
         fromStops:srcCols.some(Boolean),noStatus:srcCols.every(v=>!v)};
     }
   }
@@ -642,6 +659,8 @@ function parseCsv(t){
   }
   return{cols,rows:out};
 }
+// "2026-10-27T00:00:00.000Z" -> "2026-10-27"; empty and NaT stay blank
+const fmtDate=v=>{v=String(v==null?"":v).trim();if(!v||v==="NaT")return"";const m=v.match(/^(\d{4}-\d{2}-\d{2})/);return m?m[1]:v};
 const cq=v=>'"'+String(v).replace(/"/g,'""')+'"';
 function csvOf(s,idx,extra){
   const out=[(extra?[cq(extra.name)]:[]).concat(s.cols.map(cq)).join(",")];
@@ -884,38 +903,46 @@ function renderChecks(){
   const na=t=>`<span class="pc na">${t}</span>`;
   let h="";
   if(o){
-    const T="Finished orders with no stop";
+    const T="Finished orders in Orders file but missing from Stops file";
     if(o.missing)h+=section(T,na("needs a "+o.missing+" file"),`Load a ${o.missing} file to run this check.`,null,"orders_su");
-    else if(o.noStatus&&!o.finished)h+=section(T,na("no status column"),"The orders file has no status or order_hash_id column.",null,"orders_su");
+    else if(o.noStatus&&!o.finished)h+=section(T,na("no status column"),"The Orders file has no status or order_hash_id column.",null,"orders_su");
     else{
       const pill=n=>n?`<span class="pc bad">${n.toLocaleString()} flagged</span>`:`<span class="pc ok">None</span>`;
       h+=section(T+" · with service_unit",pill(o.withSU.n),
-        o.withSU.n?`${o.withSU.n.toLocaleString()} of ${o.finished.toLocaleString()} Finished orders have no stop and have a service_unit value.`
-                  :"No Finished order without a stop has a service_unit value.",o.withSU.groups,"orders_su");
+        o.withSU.n?`${o.withSU.n.toLocaleString()} of ${o.finished.toLocaleString()} Finished orders in the Orders file are missing from the Stops file and have a service_unit value.`
+                  :"No Finished order that is missing from the Stops file has a service_unit value.",o.withSU.groups,"orders_su");
       h+=section(T+" · without service_unit",pill(o.withoutSU.n),
-        (o.noSU?"The orders file has no service_unit column, so every flagged order is listed here. ":"")+
-        (o.withoutSU.n?`${o.withoutSU.n.toLocaleString()} of ${o.finished.toLocaleString()} Finished orders have no stop and a blank service_unit.`
-                      :"No Finished order without a stop has a blank service_unit."),o.withoutSU.groups,"orders_nosu");
+        (o.noSU?"The Orders file has no service_unit column, so every flagged order is listed here. ":"")+
+        (o.withoutSU.n?`${o.withoutSU.n.toLocaleString()} of ${o.finished.toLocaleString()} Finished orders in the Orders file are missing from the Stops file and have a blank service_unit.`
+                      :"No Finished order that is missing from the Stops file has a blank service_unit."),o.withoutSU.groups,"orders_nosu");
     }
   }
   if(r){
-    const T="Routes in stops but missing from routes";
+    const T="Route hash in Stops file but missing from Routes file";
     if(r.missing)h+=section(T,na("needs a "+r.missing+" file"),`Load a ${r.missing} file to run this check.`,null,"routes");
-    else if(!r.flagged)h+=section(T,`<span class="pc ok">None</span>`,"Every route_hash_id in the stops file is in the routes file.",null,"routes");
+    else if(!r.flagged)h+=section(T,`<span class="pc ok">None</span>`,"Every route_hash_id in the Stops file is in the Routes file.",null,"routes");
     else{
       const f=routeFilter,cur=r.by[f];
       const tabs=[["all","All"],["scheduled","Scheduled"],["finished","Finished"],["other","Other / unknown"]];
       const bar=`<div class="seg" role="group" aria-label="Filter by status">${tabs.map(([k,l])=>`<button type="button" data-rf="${k}" class="${k===f?"on":""}" aria-pressed="${k===f}">${l} <span>${r.by[k].routes.length.toLocaleString()}</span></button>`).join("")}</div>`;
       const LIMR=500,shown=cur.routes.slice(0,LIMR);
+      const ordCell=x=>{
+        const lst=[...x.ord[f].entries()],more=lst.length-3,top=lst.slice(0,3);
+        const tail=more>0?` +${more} more`:"";
+        return{on:(top.map(([a])=>a.replace(/^hash:/,"")).join(", ")+tail)||"—",
+               dt:(top.map(([,b])=>b||"—").join(", ")+tail)||"—",
+               tip:lst.map(([a,b])=>`${a.replace(/^hash:/,"")} — ${b||"no delivery date"}`).join("\n")};
+      };
       const body=cur.routes.length
-        ?`<div class="wrap"><table><tr><th>route_hash_id</th><th>stops${f==="all"?"":" ("+f+")"}</th><th>scheduled</th><th>finished</th><th>other</th></tr>${shown.map(x=>`<tr><td class="id">${esc(x.id)}</td><td>${(f==="all"?x.total:x[f]).toLocaleString()}</td><td>${x.scheduled}</td><td>${x.finished}</td><td>${x.other}</td></tr>`).join("")}</table></div>`
+        ?`<div class="wrap"><table><tr><th>route_hash_id</th><th>order_number</th><th>delivery_date</th><th>stops${f==="all"?"":" ("+f+")"}</th><th>scheduled</th><th>finished</th><th>other</th></tr>${shown.map(x=>{const c=ordCell(x);return `<tr><td class="id">${esc(x.id)}</td><td class="k" title="${esc(c.tip)}">${esc(c.on)}</td><td title="${esc(c.tip)}">${esc(c.dt)}</td><td>${(f==="all"?x.total:x[f]).toLocaleString()}</td><td>${x.scheduled}</td><td>${x.finished}</td><td>${x.other}</td></tr>`}).join("")}</table></div>`
           +(cur.routes.length>LIMR?`<div class="sum">Showing ${LIMR} of ${cur.routes.length.toLocaleString()} routes (CSV has all).</div>`:"")
+          +(r.hasDates?"":`<div class="sum">No delivery dates found. They come from the Orders file, so load it (with delivery_date) to fill that column.</div>`)
         :`<div class="sum">No routes in this group.</div>`;
       h+=section(T,`<span class="pc bad">${r.routeSet.size.toLocaleString()} route(s)</span>`,
-        `${r.routeSet.size.toLocaleString()} route(s) used by ${r.flagged.toLocaleString()} stop(s) are not in the routes file. `+
-        (r.fromStops?"Status is read from the stops file’s own status column. ":
-          r.noStatus&&!r.hasOrders?"The stops file has no status column, so every stop is counted as “Other / unknown”. ":
-          "The stops file has no status column, so the order’s status from the orders file is used. ")+
+        `${r.routeSet.size.toLocaleString()} route hash${r.routeSet.size===1?"":"es"} used by ${r.flagged.toLocaleString()} stop${r.flagged===1?"":"s"} in the Stops file ${r.routeSet.size===1?"is":"are"} not in the Routes file. `+
+        (r.fromStops?"Status is read from the Stops file’s own status column. ":
+          r.noStatus&&!r.hasOrders?"The Stops file has no status column, so every stop is counted as “Other / unknown”. ":
+          "The Stops file has no status column, so each order’s status from the Orders file is used. ")+
         `Showing ${cur.routes.length.toLocaleString()} route(s)${f==="all"?"":" with at least one "+(f==="other"?"other / unknown":f)+" stop"}.`,
         null,"routes",{bar,body,dl:cur.routes.length>0,copy:cur.routes.length>0});
     }
@@ -940,15 +967,15 @@ $("checksBody").addEventListener("click",e=>{
     const r=c.routes;
     if(!r||!r.by)return;
     const f=routeFilter,rows=r.by[f].routes;
-    const lines=[["route_hash_id","stops"+(f==="all"?"":"_"+f),"scheduled","finished","other"].map(cq).join(",")]
-      .concat(rows.map(x=>[x.id,f==="all"?x.total:x[f],x.scheduled,x.finished,x.other].map(cq).join(",")));
-    save(new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv"}),"routes_missing_from_routes_file"+(f==="all"?"":"_"+f)+".csv");
+    const lines=[["route_hash_id","order_number","delivery_date","stops"+(f==="all"?"":"_"+f),"scheduled","finished","other"].map(cq).join(",")]
+      .concat(rows.map(x=>{const l=[...x.ord[f].entries()];return [x.id,l.map(([a])=>a.replace(/^hash:/,"")).join("; "),l.map(([,b])=>b||"").join("; "),f==="all"?x.total:x[f],x.scheduled,x.finished,x.other].map(cq).join(",")}));
+    save(new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv"}),"route_hash_in_stops_missing_from_routes_file"+(f==="all"?"":"_"+f)+".csv");
     return;
   }
   const groups=k==="orders_su"?c.orders&&c.orders.withSU&&c.orders.withSU.groups
               :k==="orders_nosu"?c.orders&&c.orders.withoutSU&&c.orders.withoutSU.groups:null;
   if(!groups)return;
-  const tag={orders_su:"finished_orders_no_stop_with_service_unit",orders_nosu:"finished_orders_no_stop_without_service_unit"}[k];
+  const tag={orders_su:"finished_orders_missing_from_stops_with_service_unit",orders_nosu:"finished_orders_missing_from_stops_without_service_unit"}[k];
   for(const[s,ids]of groups)save(new Blob(["\ufeff"+csvOf(s,ids)],{type:"text/csv"}),base(s.name).replace(/\.(parquet|csv)$/i,"")+"_"+tag+".csv");
 });
 
@@ -959,8 +986,8 @@ function renderStrip(){
   const rows=store.reduce((a,x)=>a+x.rows.length,0),{orders:o,routes:r}=checkState;
   const parts=[`<span><b>${store.length.toLocaleString()}</b> file${store.length===1?"":"s"} · <b>${rows.toLocaleString()}</b> rows</span>`];
   let issues=0;
-  if(o&&!o.missing&&o.flagged){issues++;parts.push(`<button type="button" class="lnk" data-jump="${o.withSU.n?"orders_su":"orders_nosu"}"><span class="dotw"></span>${o.flagged.toLocaleString()} finished order${o.flagged===1?"":"s"} without a stop</button>`)}
-  if(r&&!r.missing&&r.flagged){issues++;parts.push(`<button type="button" class="lnk" data-jump="routes"><span class="dotw"></span>${r.routeSet.size.toLocaleString()} route${r.routeSet.size===1?"":"s"} missing from the routes file</button>`)}
+  if(o&&!o.missing&&o.flagged){issues++;parts.push(`<button type="button" class="lnk" data-jump="${o.withSU.n?"orders_su":"orders_nosu"}"><span class="dotw"></span>${o.flagged.toLocaleString()} finished order${o.flagged===1?"":"s"} in Orders file but missing from Stops file</button>`)}
+  if(r&&!r.missing&&r.flagged){issues++;parts.push(`<button type="button" class="lnk" data-jump="routes"><span class="dotw"></span>${r.routeSet.size.toLocaleString()} route hash${r.routeSet.size===1?"":"es"} in Stops file but missing from Routes file</button>`)}
   if(!issues&&((o&&!o.missing)||(r&&!r.missing)))parts.push(`<span><span class="dotw ok"></span>No data issues found</span>`);
   el.innerHTML=parts.join("");el.hidden=false;
 }
@@ -997,30 +1024,8 @@ function onIdDbl(e){
 }
 for(const id of["out","checksBody"]){$(id).addEventListener("click",onIdClick);$(id).addEventListener("dblclick",onIdDbl)}
 
-// ---------- recent searches (kept in this browser only) ----------
-const RK="ps-recent";
-const getRecent=()=>{try{const a=JSON.parse(localStorage.getItem(RK));return Array.isArray(a)?a:[]}catch(e){return[]}};
-const putRecent=a=>{try{localStorage.setItem(RK,JSON.stringify(a))}catch(e){}};
-function addRecent(f,q,p){
-  if(!q)return;
-  const a=getRecent().filter(x=>!(x.f===f&&x.q===q&&!!x.p===!!p));
-  a.unshift({f,q:q.slice(0,300),p:!!p});
-  putRecent(a.slice(0,8));renderRecent();
-}
-function renderRecent(){
-  const a=getRecent(),el=$("recent");
-  el.hidden=!a.length;
-  el.innerHTML=a.length?`<span>Recent</span>`+a.map((x,i)=>`<button type="button" data-ri="${i}" title="${esc(x.q)}">${esc(x.q.length>26?x.q.slice(0,24)+"…":x.q)}</button>`).join("")+`<button type="button" class="clr" data-rclear>Clear</button>`:"";
-}
-$("recent").addEventListener("click",e=>{
-  if(e.target.closest("[data-rclear]")){putRecent([]);renderRecent();return}
-  const b=e.target.closest("[data-ri]");
-  if(!b)return;
-  const x=getRecent()[+b.dataset.ri];
-  if(!x)return;
-  $("field").value=x.f;$("q").value=x.q;$("part").checked=!!x.p;search();
-});
-renderRecent();
+// searches are never stored; clear anything a previous version may have saved
+try{localStorage.removeItem("ps-recent")}catch(e){}
 
 // ---------- keyboard ----------
 function clearResults(){view=null;$("out").className="";$("out").innerHTML="";$("sum").textContent="";$("legend").hidden=true;updateEmpty()}
@@ -1063,9 +1068,9 @@ function search(){
   const fo=checkState.orders;
   if(fo&&fo.hashes){
     const n=[...r.K.order_hash_id].filter(h=>fo.hashes.has(h)).length;
-    if(n)r.notes.push(`Flagged: ${n} Finished order(s) here have no stop in the stops file.`);
+    if(n)r.notes.push(`Flagged: ${n} Finished order${n===1?"":"s"} here ${n===1?"is":"are"} in the Orders file but missing from the Stops file.`);
   }
-  view={...r,vals,raw:$("q").value.trim(),fresh:true,partial:$("part").checked,ms:Math.round(performance.now()-t0),field};
+  view={...r,vals,fresh:true,partial:$("part").checked,ms:Math.round(performance.now()-t0),field};
   limits.clear();
   show();
 }
@@ -1123,7 +1128,6 @@ function show(){
   root.classList.toggle("heavy",shownRows>120); // pause the ambient glow while a big table is on screen
   $("out").innerHTML=html;
   $("legend").hidden=!ordered.length;
-  if(fresh&&nd+nl>0)addRecent(field,view.raw,partial);
   updateEmpty();
 }
 $("out").addEventListener("click",e=>{
