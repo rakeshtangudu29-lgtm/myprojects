@@ -214,7 +214,89 @@ details.chk .chkb{padding:0 2px 16px}
 .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,12px);background:var(--tx);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .18s,transform .22s var(--ease);z-index:20;max-width:90vw}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
+
+/* slim mode tabs + compact preview toolbar */
+.modebar{margin:0 0 12px}
+.modebar .seg{display:grid;grid-template-columns:1fr 1fr;width:100%;margin:0}
+.modebar .seg button{padding:9px 14px;font-size:13px;text-align:center}
+.pv{padding:14px}
+.pvbar{display:grid;grid-template-columns:minmax(170px,220px) minmax(0,1.5fr) minmax(0,1fr);gap:8px}
+@media (max-width:760px){.pvbar{grid-template-columns:1fr}}
+.pk{position:relative;min-width:0}
+.pk-ctl{display:flex;align-items:center;gap:9px;width:100%;height:40px;padding:0 12px;border:1px solid var(--bd2);border-radius:8px;background:var(--inp);color:var(--tx);font:inherit;font-size:14px;font-weight:500;text-align:left;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.pk-ctl:hover{background:var(--inp);border-color:var(--mut)}
+button.pk-ctl:active{transform:none}
+.pk-ctl:focus-visible,.pk.open .pk-ctl{border-color:var(--ac);box-shadow:0 0 0 3px var(--ring);outline:none}
+.pk-ctl .pk-val{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-ctl .pk-n{font-size:11px;font-weight:500;color:var(--mut);background:var(--sunk);border-radius:999px;padding:1px 8px;flex:none}
+.pk-ctl svg{flex:none;color:var(--mut)}
+.pk-chev{transition:transform .18s var(--ease)}
+.pk.open .pk-chev{transform:rotate(180deg)}
+.pk input.pk-ctl{cursor:text;padding:0 12px 0 36px;flex:none;min-width:0}
+.pk .pk-ic{position:absolute;left:12px;top:12px;pointer-events:none;color:var(--mut)}
+.pk .pk-end{position:absolute;right:10px;top:12px;pointer-events:none;color:var(--mut)}
+.pk-file input.pk-ctl{padding-right:34px;text-overflow:ellipsis}
+.pk-rows input.pk-ctl{min-width:0;cursor:text}
+.pk-panel{position:absolute;z-index:30;top:calc(100% + 6px);left:0;width:max(100%,380px);max-width:min(760px,calc(100vw - 40px));max-height:min(380px,60vh);overflow:auto;padding:5px;background:var(--card);border:1px solid var(--bd2);border-radius:10px;box-shadow:0 16px 40px rgba(0,0,0,.30),0 2px 6px rgba(0,0,0,.14);animation:pkin .14s var(--ease)}
+.pk-file .pk-panel{width:max(100%,660px)}
+@keyframes pkin{from{opacity:0;transform:translateY(-4px)}}
+.pk-h{position:sticky;top:-5px;z-index:1;display:flex;align-items:center;gap:8px;padding:8px 10px 5px;margin:0 -5px;background:var(--card);font-size:12px;font-weight:650;color:var(--mut)}
+.pk-h span:last-child{margin-left:auto;font-weight:500}
+.pk-o{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:10px;padding:7px 10px;border-radius:7px;cursor:pointer;font-size:13.5px}
+.pk-o.on{background:var(--hov)}
+.pk-o[aria-selected="true"]{color:var(--ac)}
+.pk-o .dot{grid-row:1}
+.pk-o .ot{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:550}
+.pk-o .os{grid-column:2;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--mut);font-weight:400;margin-top:1px}
+.pk-o .oc{grid-row:1;grid-column:3;font-size:12px;color:var(--mut);white-space:nowrap}
+.pk-o.nf .dot{grid-row:auto}
+.pk-o mark{background:var(--hi);color:inherit;border-radius:3px;padding:0 1px}
+.pk-o .ck{grid-column:3;grid-row:2;justify-self:end;color:var(--ac)}
+.pk-note,.pk-none{padding:10px 12px;font-size:12px;color:var(--mut)}
+.dot.all{background:transparent;border:1.5px solid var(--mut)}
+.pvinfo{display:flex;align-items:flex-end;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;margin:12px 0 10px}
+.pvmeta{min-width:0;flex:1 1 320px}
+.pvpath{font-size:12px;color:var(--mut);overflow-wrap:anywhere;line-height:1.4}
+.pvsum{font-size:13px;margin-top:2px}
+.pk-o .oc.hit{color:var(--ac);font-weight:600}
+.pv-empty{display:grid;justify-items:center;gap:4px;padding:56px 20px;text-align:center;color:var(--mut);font-size:13px}
+.pv-empty b{color:var(--tx);font-size:15px;font-weight:650}
+.pvcol{position:relative;display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:8px}
+.fchips{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.fchip{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:3px 4px 3px 11px;border:1px solid var(--bd2);border-radius:999px;background:var(--card2);font-size:12.5px;cursor:pointer}
+.fchip:hover{border-color:var(--mut)}
+.fchip:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.fchip b{font-weight:600}
+.fchip span{color:var(--mut)}
+.fchip em{font-style:normal;color:var(--ac);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+.fchip .fx,.fclose{height:auto;width:auto;padding:5px;line-height:0;border:0;border-radius:999px;background:transparent;color:var(--mut)}
+.fchip .fx:hover,.fclose:hover{background:var(--hov);color:var(--bad)}
+.pvcol .fadd{display:inline-flex;align-items:center;gap:6px;color:var(--ac);border-color:transparent}
+.pvcol .fadd:hover{border-color:var(--bd2)}
+.pvcol .fdel{color:var(--bad);border-color:transparent}
+.pvcol .fdel:hover{border-color:var(--bd2)}
+.fpop{position:absolute;z-index:40;top:calc(100% + 8px);right:0;width:min(360px,100%);padding:16px;background:var(--card);border:1px solid var(--bd2);border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.30),0 2px 6px rgba(0,0,0,.14);animation:pkin .14s var(--ease)}
+.fph{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-size:15px}
+.fl{font-size:12px;color:var(--mut);margin:12px 0 5px}
+.fpf{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.fpf button{height:36px;padding:0 18px;font-size:13px}
+.fpf button.sec{padding:0 16px}
+.fpop .pk{max-width:none;flex:none}
+.fpop .pk-panel{position:static;width:100%;max-width:none;max-height:190px;margin-top:6px;box-shadow:none;animation:none;background:var(--card2)}
+.fpop .pk-h{background:var(--card2)}
+.pvcl{font-size:13px;color:var(--mut)}
+.pk-col input.pk-ctl,.pk-val input.pk-ctl{padding:0 32px 0 12px}
+.pk-val input.pk-ctl{padding-right:12px}
+.pk-ctl:disabled{opacity:.55;cursor:not-allowed}
+.pk-col .pk-panel,.pk-val .pk-panel{width:max(100%,320px)}
+.pk-o.two{grid-template-columns:minmax(0,1fr) auto}
+.pk-o.two .oc{grid-column:2}
+.pk-o.two .ck{grid-column:2;grid-row:1}
+.pvcol>.sec{height:34px;padding:0 12px}
+.pv .wrap{max-height:calc(100vh - 322px);min-height:280px}
+
 @media (prefers-reduced-motion:reduce){
+  .pk-panel,.fpop{animation:none}
   .bg i:nth-child(n){animation:none}
   .fresh .card,.fresh .wrap td.m,details[open]>.chkb,details[open]>.chips,details[open]>#modelBody{animation:none}
   *{transition-duration:.01ms!important}
@@ -264,7 +346,14 @@ details.chk .chkb{padding:0 2px 16px}
 <main class="main">
   <div id="strip" class="strip" hidden></div>
 
-  <section class="card search">
+  <div class="modebar" id="modeCard" hidden>
+    <div class="seg" role="group" aria-label="Choose application mode">
+      <button type="button" id="searchModeBtn" class="on" aria-pressed="true">Search across files</button>
+      <button type="button" id="previewModeBtn" aria-pressed="false">File preview</button>
+    </div>
+  </div>
+
+  <section class="card search" id="searchCard">
     <h2 class="ct"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</h2>
     <div class="row">
       <select id="field" aria-label="Search by">
@@ -286,6 +375,61 @@ details.chk .chkb{padding:0 2px 16px}
     <label><input type="checkbox" id="hide" checked> Hide empty columns</label>
     <label><input type="checkbox" id="exp" checked> Include orders when searching a route</label>
     <div class="hint">Press <kbd>/</kbd> to focus search, <kbd>Esc</kbd> to clear. Results follow the order Orders → Stops → Routes → Settlements → others.</div>
+  </section>
+
+
+  <section class="card pv" id="previewCard" hidden>
+    <div class="pvbar">
+      <div class="pk" id="typePk">
+        <button type="button" class="pk-ctl" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-controls="typePk-list" aria-label="File type"><i class="dot" id="typeDot"></i><span class="pk-val" id="typeVal"></span><span class="pk-n" id="typeN"></span><svg class="pk-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="pk-panel" id="typePk-list" role="listbox" aria-label="File types" hidden></div>
+      </div>
+      <div class="pk pk-file" id="filePk">
+        <svg class="pk-ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="text" class="pk-ctl" id="fileInp" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="filePk-list" aria-label="Select a file to preview" autocomplete="off" spellcheck="false">
+        <span class="pk-end"><svg class="pk-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+        <div class="pk-panel" id="filePk-list" role="listbox" aria-label="Files" hidden></div>
+      </div>
+      <div class="pk pk-rows">
+        <svg class="pk-ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>
+        <input type="text" class="pk-ctl" id="previewFilter" placeholder="Filter rows in this file…" aria-label="Filter preview rows" autocomplete="off" style="padding-left:36px">
+      </div>
+    </div>
+    <div class="pvcol" id="pvcol">
+      <span class="pvcl">Find files where</span>
+      <div class="fchips" id="fchips"></div>
+      <button type="button" class="sec fadd" id="fAdd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg><span>Add filter</span></button>
+      <button type="button" class="sec" id="colHits" hidden></button>
+      <button type="button" class="sec fdel" id="colClear" hidden>Remove all</button>
+      <div class="fpop" id="fpop" role="dialog" aria-labelledby="fpopT" hidden>
+        <div class="fph"><b id="fpopT">Add new filter</b><button type="button" class="fclose" id="fpopX" aria-label="Close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+        <div class="fl">Field</div>
+        <div class="pk pk-col" id="colPk">
+          <input type="text" class="pk-ctl" id="colInp" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="colPk-list" aria-label="Column to filter files by" placeholder="Select a column…" autocomplete="off" spellcheck="false">
+          <span class="pk-end"><svg class="pk-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+          <div class="pk-panel" id="colPk-list" role="listbox" aria-label="Columns" hidden></div>
+        </div>
+        <div class="fl">Contains</div>
+        <div class="pk pk-val" id="valPk">
+          <input type="text" class="pk-ctl" id="valInp" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="valPk-list" aria-label="Value to look for in that column" autocomplete="off" spellcheck="false" disabled>
+          <div class="pk-panel" id="valPk-list" role="listbox" aria-label="Values" hidden></div>
+        </div>
+        <div class="fpf"><button type="button" class="sec" id="fpCancel">Cancel</button><button type="button" id="fpDone" disabled>Done</button></div>
+      </div>
+    </div>
+    <div class="pvinfo">
+      <div class="pvmeta">
+        <div id="previewPath" class="pvpath"></div>
+        <div id="previewSummary" class="pvsum sum" style="margin:2px 0 0" role="status"></div>
+      </div>
+      <div class="btns">
+        <button type="button" class="sec" id="previewPrev">Previous</button>
+        <span id="previewPage" class="sum" style="margin:0;align-self:center"></span>
+        <button type="button" class="sec" id="previewNext">Next</button>
+        <button type="button" class="sec" id="previewCsv">Download CSV</button>
+      </div>
+    </div>
+    <div id="previewTable" class="wrap"></div>
   </section>
 
   <section class="card" id="checks" hidden aria-label="Data checks">
@@ -687,11 +831,11 @@ document.addEventListener("visibilitychange",()=>root.classList.toggle("hid",doc
 
 // ---------- empty state ----------
 function updateEmpty(){
-  $("empty").hidden=!!(store.length&&view);
+  $("empty").hidden=!!(store.length&&(view||appMode==="preview"));
   if(!view)root.classList.remove("heavy");
   $("emptyL").hidden=store.length>0;
   if(!store.length){$("emptyT").textContent="No files loaded yet";$("emptyS").textContent="Add your parquet, CSV or ZIP exports to search across orders, stops, routes and settlements."}
-  else{$("emptyT").textContent="Ready to search";$("emptyS").textContent=`${store.length.toLocaleString()} file${store.length===1?"":"s"} loaded. Enter an order number or any ID above to trace it across them.`}
+  else{$("emptyT").textContent=appMode==="preview"?"Select a file to preview":"Ready to search";$("emptyS").textContent=appMode==="preview"?"Pick a file type, then a file, to inspect its rows and columns.":`${store.length.toLocaleString()} file${store.length===1?"":"s"} loaded. Enter an order number or any ID above to trace it across them.`}
 }
 
 // ---------- loading ----------
@@ -711,6 +855,320 @@ getLib().catch(()=>{}); // warm up in the background; the page stays usable mean
 
 const store=[];
 let view=null;
+let appMode="search", previewPage=0;
+const PREVIEW_PAGE_SIZE=100;
+function setMode(mode){
+  appMode=mode;
+  $("searchCard").hidden=mode!=="search";
+  $("previewCard").hidden=mode!=="preview";
+  $("searchModeBtn").classList.toggle("on",mode==="search");
+  $("previewModeBtn").classList.toggle("on",mode==="preview");
+  $("searchModeBtn").setAttribute("aria-pressed",String(mode==="search"));
+  $("previewModeBtn").setAttribute("aria-pressed",String(mode==="preview"));
+  if(mode==="preview")renderPreview();
+}
+// ---- file preview: type dropdown -> searchable file dropdown ----
+const pv={type:null,f:null,q:""};   // type: "all" or a TYPE_ORDER key; f: the dataset object being previewed
+const fileLabel=n=>base(n).replace(/(\.snappy)?\.(parquet|csv)$/i,"");
+const folderOf=n=>String(n).split("/").slice(0,-1).join("/");
+const typeName=t=>t==="all"?"All types":(t==="other"?"Other / unrecognized":LABEL[t]);
+const fmt=n=>n.toLocaleString();
+const FILE_CAP=150;
+function typeStats(){const m={};store.forEach(s=>{const o=m[s.type]||(m[s.type]={n:0,rows:0});o.n++;o.rows+=s.rows.length});return m}
+function hl(text,tokens){
+  if(!tokens.length)return esc(text);
+  const re=new RegExp("("+tokens.map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join("|")+")","gi");
+  return text.split(re).map((p,i)=>i%2?`<mark>${esc(p)}</mark>`:esc(p)).join("");
+}
+const CHECK='<svg class="ck" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>';
+
+// generic dropdown: keyboard (arrows/Enter/Esc), mouse, outside click
+function picker(root,cfg){
+  const ctl=root.querySelector(".pk-ctl"),panel=root.querySelector(".pk-panel");
+  let opts=[],act=-1,isOpen=false;
+  const uid=root.id+"-o";
+  function draw(){
+    const ents=cfg.entries();opts=[];let h="";
+    for(const e of ents){
+      if(e.head)h+=`<div class="pk-h" role="presentation">${e.head}</div>`;
+      else if(e.note)h+=`<div class="pk-note" role="presentation">${e.note}</div>`;
+      else{const k=opts.length;opts.push(e);h+=`<div class="pk-o${e.cls?" "+e.cls:""}" role="option" id="${uid}${k}" data-k="${k}" aria-selected="${!!e.sel}">${e.html}${e.sel?CHECK:""}</div>`}
+    }
+    if(!opts.length&&!ents.some(e=>e.note))h+=`<div class="pk-none" role="presentation">${cfg.none||"Nothing to show"}</div>`;
+    panel.innerHTML=h;
+    act=cfg.keepFirst?(opts.length?0:-1):Math.max(0,opts.findIndex(o=>o.sel));
+    if(!opts.length)act=-1;
+    mark(true);
+  }
+  function mark(scroll){
+    panel.querySelectorAll(".pk-o.on").forEach(n=>n.classList.remove("on"));
+    const n=act>=0?panel.querySelector(`[data-k="${act}"]`):null;
+    if(n){n.classList.add("on");if(scroll)n.scrollIntoView({block:"nearest"});ctl.setAttribute("aria-activedescendant",n.id)}
+    else ctl.removeAttribute("aria-activedescendant");
+  }
+  function open(){if(isOpen)return;isOpen=true;root.classList.add("open");ctl.setAttribute("aria-expanded","true");panel.hidden=false;draw();if(cfg.onOpen)cfg.onOpen()}
+  function close(){if(!isOpen)return;isOpen=false;root.classList.remove("open");ctl.setAttribute("aria-expanded","false");panel.hidden=true;if(cfg.onClose)cfg.onClose()}
+  function pickAt(k){const e=opts[k];if(!e)return;close();cfg.pick(e.id)}
+  ctl.addEventListener("click",()=>{if(cfg.toggle&&isOpen)close();else open()});
+  ctl.addEventListener("keydown",e=>{
+    if(e.key==="ArrowDown"){e.preventDefault();if(!isOpen)open();else{act=Math.min(act+1,opts.length-1);mark(true)}}
+    else if(e.key==="ArrowUp"){e.preventDefault();if(!isOpen)open();else{act=Math.max(act-1,0);mark(true)}}
+    else if(e.key==="Enter"||(e.key===" "&&cfg.toggle)){e.preventDefault();if(isOpen&&act>=0)pickAt(act);else if(!isOpen){if(cfg.enterClosed)cfg.enterClosed();else open()}else if(cfg.enterNone)cfg.enterNone()}
+    else if(e.key==="Escape"&&isOpen){e.preventDefault();e.stopPropagation();close()}
+    else if(e.key==="Tab")close();
+  });
+  panel.addEventListener("mousedown",e=>e.preventDefault());
+  panel.addEventListener("click",e=>{const o=e.target.closest(".pk-o");if(o)pickAt(+o.dataset.k)});
+  panel.addEventListener("mousemove",e=>{const o=e.target.closest(".pk-o");if(o&&+o.dataset.k!==act){act=+o.dataset.k;mark(false)}});
+  document.addEventListener("pointerdown",e=>{if(isOpen&&!root.contains(e.target)&&!(cfg.keepFor&&e.target.closest(cfg.keepFor)))close()});
+  return{open,close,redraw:()=>{if(isOpen)draw()},get isOpen(){return isOpen}};
+}
+
+const typePicker=picker($("typePk"),{
+  toggle:true,
+  entries(){
+    const st=typeStats(),total=store.length,rows=store.reduce((a,s)=>a+s.rows.length,0);
+    const out=[{id:"all",sel:pv.type==="all",html:`<i class="dot all"></i><span class="ot">All types</span><span class="oc">${fmt(total)} file${total===1?"":"s"}</span>`}];
+    for(const t of TYPE_ORDER)if(st[t])out.push({id:t,sel:pv.type===t,html:`<i class="dot t-${t}"></i><span class="ot">${typeName(t)}</span><span class="oc">${fmt(st[t].n)} file${st[t].n===1?"":"s"} · ${fmt(st[t].rows)} rows</span>`});
+    return out;
+  },
+  pick(t){setType(t)}
+});
+
+// does this file contain the value in one of its indexed ID columns? exact match first, then partial (3+ chars)
+function valueMatch(f,v){
+  let best=null;
+  for(const k in f.idx){
+    const m=f.idx[k],ex=m.get(v);
+    if(ex){if(!best||ex.length>best.rows)best={col:f.col[k],rows:ex.length}}
+  }
+  if(best||v.length<3)return best;
+  for(const k in f.idx){
+    let n=0;
+    for(const [key,arr] of f.idx[k])if(key.includes(v))n+=arr.length;
+    if(n&&(!best||n>best.rows))best={col:f.col[k],rows:n};
+  }
+  return best;
+}
+// ---- stackable column filters for finding files (Add filter popover) ----
+pv.filters=[];                         // [{col,val}], all must hold (AND)
+const draft={col:"",val:"",edit:-1};
+const scopeFiles=()=>store.filter(f=>pv.type==="all"||f.type===pv.type);
+function scopeColumns(){const m=new Map();for(const f of scopeFiles())for(const c of f.cols){const k=norm(c),o=m.get(k)||{name:c,n:0};o.n++;m.set(k,o)}return [...m.values()]}
+const descOf=cfs=>cfs.map(x=>`${x.c} contains “${x.raw}”`);
+function colFiltersFor(f){            // the filters that apply to this file's columns
+  const out=[];
+  for(const x of pv.filters){const c=f.cols.find(y=>norm(y)===norm(x.col));if(c)out.push({c,v:x.val.trim().toLowerCase(),raw:x.val.trim()})}
+  return out;
+}
+const cmCache=new WeakMap();
+function colMatch(f){                 // rows where ALL filters hold; the file needs every filter's column
+  if(!pv.filters.length)return null;
+  const cfs=colFiltersFor(f);if(cfs.length<pv.filters.length)return null;
+  const key=JSON.stringify(cfs),c=cmCache.get(f);
+  if(c&&c.key===key)return c.res;
+  let n=0;for(const r of f.rows)if(cfs.every(x=>str(r[x.c]).toLowerCase().includes(x.v)))n++;
+  const res=n?{rows:n,parts:cfs}:null;cmCache.set(f,{key,res});return res;
+}
+function computeHits(){
+  const raw=pv.q.trim(),tokens=raw.toLowerCase().split(/\s+/).filter(Boolean),vq=norm(raw);
+  const hits=[];
+  for(const f of scopeFiles()){
+    let cm=null;
+    if(pv.filters.length){cm=colMatch(f);if(!cm)continue}
+    const nameHit=tokens.every(t=>f.name.toLowerCase().includes(t));
+    const vm=vq&&!/\s/.test(raw)?valueMatch(f,vq):null;
+    if(!nameHit&&!vm)continue;
+    hits.push({f,vm,cm});
+  }
+  hits.sort((x,y)=>(y.vm?1:0)-(x.vm?1:0));
+  return{hits,raw,tokens};
+}
+const distinctCache=new Map();
+function distinctValues(){
+  const key=pv.type+"|"+norm(draft.col);
+  if(distinctCache.has(key))return distinctCache.get(key);
+  const m=new Map();let capped=false;
+  for(const f of scopeFiles()){
+    const c=f.cols.find(x=>norm(x)===norm(draft.col));if(!c)continue;
+    for(const r of f.rows){
+      const v=str(r[c]);if(v==="")continue;
+      const n=m.get(v);
+      if(n!==undefined)m.set(v,n+1);
+      else if(m.size<5000)m.set(v,1);else capped=true;
+    }
+  }
+  const res={vals:[...m].sort((a,b)=>b[1]-a[1]),capped};
+  distinctCache.set(key,res);return res;
+}
+let colEditing=false,colQ="";
+const canDone=()=>!!(draft.col&&draft.val.trim());
+function syncPop(){
+  if(!colEditing)$("colInp").value=draft.col;
+  const v=$("valInp");v.disabled=!draft.col;
+  v.placeholder=draft.col?`Value in ${draft.col} (pick one or type)…`:"Select a field first";
+  $("fpDone").disabled=!canDone();
+}
+const colPicker=picker($("colPk"),{
+  keepFirst:true,none:"No column matches.",keepFor:"#fpop button",
+  entries(){
+    const q=norm(colQ),toks=q?[q]:[];
+    return scopeColumns().filter(o=>!q||norm(o.name).includes(q)).sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name)).slice(0,200)
+      .map(o=>({id:o.name,cls:"two",sel:norm(o.name)===norm(draft.col),html:`<span class="ot">${hl(o.name,toks)}</span><span class="oc">${fmt(o.n)} file${o.n===1?"":"s"}</span>`}));
+  },
+  pick(name){if(norm(name)!==norm(draft.col)){draft.val="";$("valInp").value=""}draft.col=name;syncPop();$("valInp").focus()},
+  onOpen(){valPicker.close();colEditing=true;colQ="";$("colInp").select()},
+  onClose(){colEditing=false;colQ="";syncPop()}
+});
+$("colInp").addEventListener("input",()=>{if(!colPicker.isOpen)colPicker.open();colQ=$("colInp").value;colPicker.redraw()});
+$("colInp").addEventListener("focus",()=>{if(!colPicker.isOpen)colPicker.open()});
+const valPicker=picker($("valPk"),{
+  keepFirst:true,none:"No suggestions. Your text will still be used.",keepFor:"#fpop button",
+  onOpen(){colPicker.close()},
+  entries(){
+    if(!draft.col)return[{note:"Select a field first."}];
+    const {vals,capped}=distinctValues(),q=draft.val.trim().toLowerCase(),toks=q?[q]:[];
+    const out=vals.filter(([v])=>!q||v.toLowerCase().includes(q)).slice(0,100)
+      .map(([v,n])=>({id:v,cls:"two",sel:v===draft.val,html:`<span class="ot">${hl(v,toks)}</span><span class="oc">${fmt(n)} row${n===1?"":"s"}</span>`}));
+    if(capped)out.push({note:"This column has many distinct values, so only common ones are suggested. Typed text is still used."});
+    return out;
+  },
+  pick(v){draft.val=v;$("valInp").value=v;syncPop()},
+  enterClosed(){if(canDone())commitFilter()},
+  enterNone(){if(canDone())commitFilter()}
+});
+$("valInp").addEventListener("input",()=>{draft.val=$("valInp").value;if(!valPicker.isOpen)valPicker.open();valPicker.redraw();syncPop()});
+$("valInp").addEventListener("focus",()=>{if(draft.col&&!valPicker.isOpen)valPicker.open()});
+
+function openPop(i){
+  draft.edit=i;draft.col=i>=0?pv.filters[i].col:"";draft.val=i>=0?pv.filters[i].val:"";
+  $("valInp").value=draft.val;$("fpopT").textContent=i>=0?"Edit filter":"Add new filter";
+  $("fpDone").textContent=i>=0?"Save":"Done";
+  $("fpop").hidden=false;syncPop();
+  (i>=0?$("valInp"):$("colInp")).focus();
+}
+function closePop(){colPicker.close();valPicker.close();$("fpop").hidden=true}
+function commitFilter(){
+  if(!canDone())return;
+  const f={col:draft.col,val:draft.val.trim()};
+  if(draft.edit>=0)pv.filters[draft.edit]=f;else pv.filters.push(f);
+  closePop();applyColFilter();
+}
+$("fAdd").addEventListener("click",()=>{if($("fpop").hidden)openPop(-1);else closePop()});
+$("fpDone").addEventListener("click",commitFilter);
+$("fpCancel").addEventListener("click",closePop);
+$("fpopX").addEventListener("click",closePop);
+$("fpop").addEventListener("keydown",e=>{if(e.key==="Escape"){e.stopPropagation();closePop();$("fAdd").focus()}});
+document.addEventListener("pointerdown",e=>{if(!$("fpop").hidden&&!e.target.closest("#fpop,#fAdd,.fchip"))closePop()});
+$("fchips").addEventListener("click",e=>{
+  const rm=e.target.closest("[data-rm]");
+  if(rm){e.stopPropagation();pv.filters.splice(+rm.dataset.rm,1);applyColFilter();return}
+  const c=e.target.closest(".fchip");if(c)openPop(+c.dataset.i);
+});
+$("fchips").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches(".fchip"))e.target.click()});
+$("colHits").addEventListener("click",()=>$("fileInp").focus());
+$("colClear").addEventListener("click",()=>{pv.filters=[];closePop();applyColFilter()});
+function applyColFilter(){previewPage=0;updateColUI();filePicker.redraw();renderPreview()}
+function pruneCol(){                  // drop filters whose column doesn't exist for the selected type
+  const cols=new Set(scopeColumns().map(o=>norm(o.name)));
+  pv.filters=pv.filters.filter(x=>cols.has(norm(x.col)));
+}
+function updateColUI(){
+  $("fchips").innerHTML=pv.filters.map((x,i)=>`<span class="fchip" data-i="${i}" tabindex="0" role="button" title="Click to edit"><b>${esc(x.col)}</b><span>contains</span><em>${esc(x.val)}</em><button type="button" class="fx" data-rm="${i}" aria-label="Remove filter ${esc(x.col)}">`+'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></span>').join("");
+  $("colClear").hidden=pv.filters.length<2;
+  const b=$("colHits");
+  if(pv.filters.length){const n=computeHits().hits.length;b.hidden=false;b.textContent=`${fmt(n)} file${n===1?"":"s"} match`}else b.hidden=true;
+}
+
+let fileEditing=false;
+const filePicker=picker($("filePk"),{
+  keepFirst:true,
+  none:"No file name or ID matches. Try another value, or switch the file type.",
+  entries(){
+    const {hits,raw,tokens}=computeHits();
+    const out=[];let shown=0;
+    const row=h=>{
+      const f=h.f,folder=folderOf(f.name);
+      const oc=h.cm?`${fmt(h.cm.rows)} matching row${h.cm.rows===1?"":"s"}`:h.vm?`${fmt(h.vm.rows)} matching row${h.vm.rows===1?"":"s"}`:`${fmt(f.rows.length)} rows`;
+      const why=[];
+      if(h.cm)why.push(descOf(h.cm.parts).map(esc).join(" and "));
+      if(h.vm)why.push(`has “${esc(raw)}” in ${esc(h.vm.col)}`);
+      if(folder)why.push(hl(folder,tokens));
+      const sub=why.join(" · ");
+      return{id:{f,vq:h.vm?raw:""},sel:f===pv.f,html:`<i class="dot t-${f.type}"></i><span class="ot">${hl(fileLabel(f.name),tokens)}</span><span class="oc${h.vm||h.cm?" hit":""}">${oc}</span>`+(sub?`<span class="os">${sub}</span>`:"")};
+    };
+    if(pv.type==="all"){
+      for(const t of TYPE_ORDER){
+        const g=hits.filter(h=>h.f.type===t);if(!g.length)continue;
+        const room=FILE_CAP-shown;if(room<=0)break;
+        out.push({head:`<i class="dot t-${t}"></i><span>${typeName(t)}</span><span>${fmt(g.length)}</span>`});
+        g.slice(0,room).forEach(h=>out.push(row(h)));shown+=Math.min(room,g.length);
+      }
+    }else{hits.slice(0,FILE_CAP).forEach(h=>out.push(row(h)));shown=Math.min(FILE_CAP,hits.length)}
+    if(hits.length>shown)out.push({note:`Showing ${fmt(shown)} of ${fmt(hits.length)} files. Keep typing to narrow the list.`});
+    return out;
+  },
+  pick(x){pv.f=x.f;pv.q="";previewPage=0;$("previewFilter").value=x.vq||"";updatePickers();renderPreview()},
+  onOpen(){fileEditing=true;pv.q="";$("fileInp").select()},
+  onClose(){fileEditing=false;pv.q="";updatePickers()}
+});
+$("fileInp").addEventListener("input",()=>{if(!filePicker.isOpen)filePicker.open();pv.q=$("fileInp").value;filePicker.redraw()});
+$("fileInp").addEventListener("focus",()=>{if(!filePicker.isOpen)filePicker.open()});
+
+function setType(t){
+  pv.type=t;pv.q="";
+  if(pv.f&&t!=="all"&&pv.f.type!==t)pv.f=null;
+  pruneCol();previewPage=0;$("previewFilter").value="";
+  updatePickers();renderPreview();
+  if(store.some(f=>pv.type==="all"||f.type===pv.type))$("fileInp").focus()
+}
+function updatePickers(){
+  const st=typeStats(),n=pv.type==="all"?store.length:(st[pv.type]?st[pv.type].n:0);
+  $("typeDot").className="dot "+(pv.type==="all"?"all":"t-"+pv.type);
+  $("typeVal").textContent=typeName(pv.type||"all");
+  $("typeN").textContent=fmt(n);
+  const inp=$("fileInp");
+  inp.placeholder=n?(pv.type==="all"?`Select a file, or search a file name or ID (${fmt(n)} files)…`:`Select a ${typeName(pv.type)} file, or search a name or ID (${fmt(n)})…`):"No files of this type";
+  inp.disabled=!n;
+  if(!fileEditing){inp.value=pv.f?fileLabel(pv.f.name):"";inp.title=pv.f?pv.f.name:""}
+  updateColUI();
+}
+function refreshPreviewFiles(){
+  const st=typeStats();
+  if(!store.length){pv.f=null;pv.type=pv.type||"all"}
+  else{
+    if(pv.type===null||(pv.type!=="all"&&!st[pv.type]))pv.type=TYPE_ORDER.find(t=>st[t])||"all";
+    if(pv.f&&(!store.includes(pv.f)||(pv.type!=="all"&&pv.f.type!==pv.type)))pv.f=null;
+  }
+  distinctCache.clear();pruneCol();
+  updatePickers();filePicker.redraw();typePicker.redraw();
+  previewPage=0;renderPreview();
+}
+function renderPreview(){
+  const f=pv.f;
+  const prev=$("previewPrev"),next=$("previewNext"),csv=$("previewCsv");
+  if(!f){
+    $("previewPath").textContent="";$("previewPage").textContent="";$("previewSummary").textContent="";
+    $("previewTable").innerHTML=`<div class="pv-empty"><b>${store.length?"No file selected":"No files loaded"}</b><span>${store.length?"Pick a file above, or type an order number or any ID to find the files that contain it.":"Add files to preview their contents."}</span></div>`;
+    prev.disabled=next.disabled=csv.disabled=true;return;
+  }
+  csv.disabled=false;
+  const q=norm($("previewFilter").value||"");
+  const cf=colFiltersFor(f);
+  let rows=cf.length?f.rows.filter(r=>cf.every(x=>str(r[x.c]).toLowerCase().includes(x.v))):f.rows;
+  if(q)rows=rows.filter(r=>f.cols.some(c=>norm(str(r[c])).includes(q)));
+  const pages=Math.max(1,Math.ceil(rows.length/PREVIEW_PAGE_SIZE));previewPage=Math.min(previewPage,pages-1);
+  const start=previewPage*PREVIEW_PAGE_SIZE,slice=rows.slice(start,start+PREVIEW_PAGE_SIZE);
+  $("previewPath").textContent=f.name;
+  $("previewSummary").textContent=((q||cf.length)?`${fmt(rows.length)} of ${fmt(f.rows.length)} rows match`:`${fmt(f.rows.length)} rows`)+` · ${fmt(f.cols.length)} columns`+(cf.length?` · ${descOf(cf).join(" and ")}`:"");
+  $("previewPage").textContent=`Page ${previewPage+1} of ${pages}`;
+  prev.disabled=previewPage===0;next.disabled=previewPage>=pages-1;
+  if(!f.cols.length){$("previewTable").innerHTML="<p style=\"padding:12px\">No columns found in this file.</p>";return}
+  let html='<table><thead><tr>'+f.cols.map(c=>`<th>${esc(c)}</th>`).join('')+'</tr></thead><tbody>';
+  for(const r of slice)html+='<tr>'+f.cols.map(c=>`<td>${esc(str(r[c]))}</td>`).join('')+'</tr>';
+  $("previewTable").innerHTML=html+'</tbody></table>';
+}
+
 const limits=new Map();
 const LIM=200;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -786,7 +1244,7 @@ async function load(files){
   else if(!jobs.length)setStatus("No parquet or CSV files found in what you added.",true);
   else setStatus(`Loaded ${jobs.length.toLocaleString()} file${jobs.length===1?"":"s"} · ready to search.`);
   view=null;$("out").innerHTML="";$("legend").hidden=true;$("sum").textContent="";
-  renderFiles();renderModel();renderChecks();
+  renderFiles();renderModel();renderChecks();$("modeCard").hidden=!store.length;refreshPreviewFiles();setMode(appMode);
 }
 
 // ---------- file chips ----------
@@ -815,7 +1273,7 @@ function renderFiles(){
   }
   $("files").innerHTML=h+"</details>";
 }
-const afterRemove=()=>{view=null;$("out").innerHTML="";$("legend").hidden=true;$("sum").textContent="";renderFiles();renderModel();renderChecks()};
+const afterRemove=()=>{view=null;$("out").innerHTML="";$("legend").hidden=true;$("sum").textContent="";renderFiles();renderModel();renderChecks();$("modeCard").hidden=!store.length;refreshPreviewFiles();setMode(appMode)};
 $("files").addEventListener("click",e=>{
   const rt=e.target.closest("[data-rmt]");
   if(rt){
@@ -1038,6 +1496,14 @@ document.addEventListener("keydown",e=>{
   }
 });
 
+// ---------- mode and file preview controls ----------
+$("searchModeBtn").addEventListener("click",()=>setMode("search"));
+$("previewModeBtn").addEventListener("click",()=>setMode("preview"));
+$("previewFilter").addEventListener("input",()=>{previewPage=0;renderPreview()});
+$("previewPrev").addEventListener("click",()=>{previewPage=Math.max(0,previewPage-1);renderPreview()});
+$("previewNext").addEventListener("click",()=>{previewPage++;renderPreview()});
+$("previewCsv").addEventListener("click",()=>{const f=pv.f;if(f)save(new Blob(["\ufeff"+csvOf(f)],{type:"text/csv"}),csvName(f.name))});
+
 // ---------- input wiring ----------
 const accepted=f=>ext(f.name);
 $("drop").onclick=()=>$("fi").click();
@@ -1051,7 +1517,7 @@ $("drop").ondrop=e=>{e.preventDefault();$("drop").classList.remove("over");load(
 $("clrbtn").onclick=()=>{
   store.length=0;view=null;
   $("out").innerHTML="";$("legend").hidden=true;$("sum").textContent="";setStatus("");
-  renderFiles();renderModel();renderChecks();
+  renderFiles();renderModel();renderChecks();$("modeCard").hidden=true;refreshPreviewFiles();setMode("search");
 };
 
 // ---------- search ----------
