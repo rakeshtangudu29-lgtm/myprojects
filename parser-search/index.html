@@ -259,6 +259,9 @@ button.pk-ctl:active{transform:none}
 .pvpath{font-size:12px;color:var(--mut);overflow-wrap:anywhere;line-height:1.4}
 .pvsum{font-size:13px;margin-top:2px}
 .pk-o .oc.hit{color:var(--ac);font-weight:600}
+.pk-o.allopt{border:1px solid var(--bd2);background:var(--hov);margin-bottom:5px}
+.pk-o.allopt .ot{color:var(--ac)}
+.pk-o.allopt .os{color:var(--mut)}
 .pv-empty{display:grid;justify-items:center;gap:4px;padding:56px 20px;text-align:center;color:var(--mut);font-size:13px}
 .pv-empty b{color:var(--tx);font-size:15px;font-weight:650}
 .pvcol{position:relative;display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:8px}
@@ -868,7 +871,7 @@ function setMode(mode){
   if(mode==="preview")renderPreview();
 }
 // ---- file preview: type dropdown -> searchable file dropdown ----
-const pv={type:null,f:null,q:""};   // type: "all" or a TYPE_ORDER key; f: the dataset object being previewed
+const pv={type:null,f:null,multi:null,q:""};   // multi: array of files shown together   // type: "all" or a TYPE_ORDER key; f: the dataset object being previewed
 const fileLabel=n=>base(n).replace(/(\.snappy)?\.(parquet|csv)$/i,"");
 const folderOf=n=>String(n).split("/").slice(0,-1).join("/");
 const typeName=t=>t==="all"?"All types":(t==="other"?"Other / unrecognized":LABEL[t]);
@@ -1068,7 +1071,13 @@ $("fchips").addEventListener("click",e=>{
 $("fchips").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches(".fchip"))e.target.click()});
 $("colHits").addEventListener("click",()=>$("fileInp").focus());
 $("colClear").addEventListener("click",()=>{pv.filters=[];closePop();applyColFilter()});
-function applyColFilter(){previewPage=0;updateColUI();filePicker.redraw();renderPreview()}
+function applyColFilter(){
+  if(pv.multi&&pv.filters.length){
+    const keep=pv.multi.filter(f=>colMatch(f));
+    if(keep.length>1)pv.multi=keep;else{pv.f=keep[0]||null;pv.multi=null}
+    updatePickers();
+  }
+  previewPage=0;updateColUI();filePicker.redraw();renderPreview()}
 function pruneCol(){                  // drop filters whose column doesn't exist for the selected type
   const cols=new Set(scopeColumns().map(o=>norm(o.name)));
   pv.filters=pv.filters.filter(x=>cols.has(norm(x.col)));
@@ -1087,6 +1096,13 @@ const filePicker=picker($("filePk"),{
   entries(){
     const {hits,raw,tokens}=computeHits();
     const out=[];let shown=0;
+    if(hits.length>1&&(pv.filters.length||tokens.length)){
+      const files=hits.map(h=>h.f),n=files.length;
+      const tot=hits.reduce((a,h)=>a+(h.cm?h.cm.rows:h.vm?h.vm.rows:h.f.rows.length),0);
+      const same=!!pv.multi&&pv.multi.length===n&&files.every(f=>pv.multi.includes(f));
+      out.push({id:{all:true,files,vq:hits.some(h=>h.vm)?raw:""},cls:"allopt",sel:same,
+        html:`<i class="dot all"></i><span class="ot">View all ${fmt(n)} matching files together</span><span class="oc hit">${fmt(tot)} matching row${tot===1?"":"s"}</span><span class="os">One combined table with a source_file column</span>`});
+    }
     const row=h=>{
       const f=h.f,folder=folderOf(f.name);
       const oc=h.cm?`${fmt(h.cm.rows)} matching row${h.cm.rows===1?"":"s"}`:h.vm?`${fmt(h.vm.rows)} matching row${h.vm.rows===1?"":"s"}`:`${fmt(f.rows.length)} rows`;
@@ -1108,7 +1124,7 @@ const filePicker=picker($("filePk"),{
     if(hits.length>shown)out.push({note:`Showing ${fmt(shown)} of ${fmt(hits.length)} files. Keep typing to narrow the list.`});
     return out;
   },
-  pick(x){pv.f=x.f;pv.q="";previewPage=0;$("previewFilter").value=x.vq||"";updatePickers();renderPreview()},
+  pick(x){if(x.all){pv.multi=x.files;pv.f=null}else{pv.f=x.f;pv.multi=null}pv.q="";previewPage=0;$("previewFilter").value=x.vq||"";updatePickers();renderPreview()},
   onOpen(){fileEditing=true;pv.q="";$("fileInp").select()},
   onClose(){fileEditing=false;pv.q="";updatePickers()}
 });
@@ -1118,6 +1134,7 @@ $("fileInp").addEventListener("focus",()=>{if(!filePicker.isOpen)filePicker.open
 function setType(t){
   pv.type=t;pv.q="";
   if(pv.f&&t!=="all"&&pv.f.type!==t)pv.f=null;
+  if(pv.multi&&t!=="all"&&pv.multi.some(f=>f.type!==t))pv.multi=null;
   pruneCol();previewPage=0;$("previewFilter").value="";
   updatePickers();renderPreview();
   if(store.some(f=>pv.type==="all"||f.type===pv.type))$("fileInp").focus()
@@ -1130,7 +1147,10 @@ function updatePickers(){
   const inp=$("fileInp");
   inp.placeholder=n?(pv.type==="all"?`Select a file, or search a file name or ID (${fmt(n)} files)…`:`Select a ${typeName(pv.type)} file, or search a name or ID (${fmt(n)})…`):"No files of this type";
   inp.disabled=!n;
-  if(!fileEditing){inp.value=pv.f?fileLabel(pv.f.name):"";inp.title=pv.f?pv.f.name:""}
+  if(!fileEditing){
+    inp.value=pv.multi?`All ${fmt(pv.multi.length)} matching files`:pv.f?fileLabel(pv.f.name):"";
+    inp.title=pv.multi?pv.multi.map(f=>f.name).join("\n"):pv.f?pv.f.name:"";
+  }
   updateColUI();
 }
 function refreshPreviewFiles(){
@@ -1141,10 +1161,44 @@ function refreshPreviewFiles(){
     if(pv.f&&(!store.includes(pv.f)||(pv.type!=="all"&&pv.f.type!==pv.type)))pv.f=null;
   }
   distinctCache.clear();pruneCol();
+  if(pv.multi){pv.multi=pv.multi.filter(f=>store.includes(f)&&(pv.type==="all"||f.type===pv.type));if(pv.multi.length<2){pv.f=pv.multi[0]||pv.f;pv.multi=null}}
   updatePickers();filePicker.redraw();typePicker.redraw();
   previewPage=0;renderPreview();
 }
+let multiCache=null;
+function renderMulti(){
+  const files=pv.multi,prev=$("previewPrev"),next=$("previewNext"),csv=$("previewCsv");
+  const q=norm($("previewFilter").value||"");
+  const key=files.map(f=>store.indexOf(f)).join(",")+"|"+JSON.stringify(pv.filters)+"|"+q;
+  if(!multiCache||multiCache.key!==key){
+    const cols=[],seen=new Set(),rows=[];let total=0;
+    for(const f of files){
+      for(const c of f.cols)if(!seen.has(c)){seen.add(c);cols.push(c)}
+      total+=f.rows.length;
+      const cf=colFiltersFor(f);
+      for(const r of f.rows){
+        if(cf.length&&!cf.every(x=>str(r[x.c]).toLowerCase().includes(x.v)))continue;
+        if(q&&!f.cols.some(c=>norm(str(r[c])).includes(q)))continue;
+        rows.push([f,r]);
+      }
+    }
+    multiCache={key,cols,rows,total};
+  }
+  const{cols,rows,total}=multiCache;
+  csv.disabled=false;
+  const pages=Math.max(1,Math.ceil(rows.length/PREVIEW_PAGE_SIZE));previewPage=Math.min(previewPage,pages-1);
+  const start=previewPage*PREVIEW_PAGE_SIZE,slice=rows.slice(start,start+PREVIEW_PAGE_SIZE);
+  $("previewPath").textContent=`Combined view of ${fmt(files.length)} files`;
+  const fl=pv.filters.map(x=>`${x.col} contains “${x.val}”`);
+  $("previewSummary").textContent=`${fmt(rows.length)} of ${fmt(total)} rows · ${fmt(files.length)} files · ${fmt(cols.length)} columns`+(fl.length?` · ${fl.join(" and ")}`:"");
+  $("previewPage").textContent=`Page ${previewPage+1} of ${pages}`;
+  prev.disabled=previewPage===0;next.disabled=previewPage>=pages-1;
+  let html='<table><thead><tr><th>source_file</th>'+cols.map(c=>`<th>${esc(c)}</th>`).join('')+'</tr></thead><tbody>';
+  for(const[f,r]of slice)html+=`<tr><td title="${esc(f.name)}">${esc(fileLabel(f.name))}</td>`+cols.map(c=>`<td>${esc(str(r[c]))}</td>`).join('')+'</tr>';
+  $("previewTable").innerHTML=html+'</tbody></table>';
+}
 function renderPreview(){
+  if(pv.multi){renderMulti();return}
   const f=pv.f;
   const prev=$("previewPrev"),next=$("previewNext"),csv=$("previewCsv");
   if(!f){
@@ -1502,7 +1556,13 @@ $("previewModeBtn").addEventListener("click",()=>setMode("preview"));
 $("previewFilter").addEventListener("input",()=>{previewPage=0;renderPreview()});
 $("previewPrev").addEventListener("click",()=>{previewPage=Math.max(0,previewPage-1);renderPreview()});
 $("previewNext").addEventListener("click",()=>{previewPage++;renderPreview()});
-$("previewCsv").addEventListener("click",()=>{const f=pv.f;if(f)save(new Blob(["\ufeff"+csvOf(f)],{type:"text/csv"}),csvName(f.name))});
+$("previewCsv").addEventListener("click",()=>{
+  if(pv.multi&&multiCache){
+    const{cols,rows}=multiCache,out=[["source_file"].concat(cols).map(cq).join(",")];
+    for(const[f,r]of rows)out.push([cq(f.name)].concat(cols.map(c=>cq(str(r[c])))).join(","));
+    save(new Blob(["\ufeff"+out.join("\n")],{type:"text/csv"}),`combined_${pv.multi.length}_files.csv`);return;
+  }
+  const f=pv.f;if(f)save(new Blob(["\ufeff"+csvOf(f)],{type:"text/csv"}),csvName(f.name))});
 
 // ---------- input wiring ----------
 const accepted=f=>ext(f.name);
